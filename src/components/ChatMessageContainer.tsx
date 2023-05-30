@@ -1,9 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { IMessage, IMessageRequestParams, useLazyFetchChatMessagesQuery } from "../slices/apiSlice";
 import { selectCurrentUser } from "../slices/authSlice";
-import { addChatMessage, selectActiveChat, setChatMessages } from "../slices/chatSlice";
+import { addChatMessage, selectActiveChat, setChatMarkAsRead, setChatMessages } from "../slices/chatSlice";
 import ChatMessagePrompt from "./ChatMessagePrompt";
+import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
+import { selectUserMap } from "../slices/userSlice";
+import ChatMessageItem from "./ChatMessageItem";
 
 export interface Message {
     type?: string,
@@ -18,67 +21,108 @@ interface Chat {
 }
 
 interface ChatMessageContainerProps {
-    messages: Message[],
-    chat: Chat,
-    onSend: (message: Message) => void
 }
 
-const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ onSend }) => {
+const UserChatHeader = ({ user }: any) => {
+    return (
+        <div className="flex gap-4">
+            <img 
+                src={user?.avatar || emptyUserAvatar} 
+                className="w-6 h-6 rounded-full bg-gray-200"
+                onError={({ currentTarget }) => {
+                    currentTarget.onerror = null; // prevents looping
+                    currentTarget.src = emptyUserAvatar;
+                }}
+            />
+            <div>
+                <span className="font-bold">{ user?.name || 'User' }</span>
+            </div>
+        </div>
+    )
+}
+
+const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
     const currentUser = useAppSelector(selectCurrentUser);
-    const userToken = useAppSelector((state) => state.auth.token);
     const activeChat = useAppSelector(selectActiveChat);
     const [getChatMessages, chatMessagesResult] = useLazyFetchChatMessagesQuery();
     const dispatch = useAppDispatch();
+    const userMap = useAppSelector(selectUserMap);
+    const chatId = activeChat?._id || null;
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const loadChatMessage = async () => {
-        if (activeChat && !activeChat?.messages) {
+        if (activeChat?._id && activeChat) {
             const result = await getChatMessages({
                 chat_id: activeChat._id,
                 limit: 10,
                 before: ''
-            });
+            }, true);
             dispatch(setChatMessages({chatId: activeChat._id, messages: result.data || [] }))
+            setTimeout(() => {
+                // scrollToBottom()
+            }, 50)
         }
+    }
+
+    const handleMessagesAreaClicked = () => {
+        dispatch(setChatMarkAsRead(activeChat));
+    }
+
+    const scrollToBottom = (options: any = {}) => {
+        messagesEndRef.current?.scrollIntoView(options)
+    }
+
+    const renderMessages = (messages: IMessage[]) => {
+        let senderBefore = '';
+        return messages?.map(message => {
+            const inBundle = senderBefore === message.sender?._id;
+            senderBefore = message.sender?._id || '';
+
+            return (
+                <ChatMessageItem 
+                    key={message._id}
+                    isMine={message.sender?._id === currentUser?._id}
+                    message={message}
+                    sender={message.sender ? userMap[message.sender._id] : null}
+                />
+            )
+        })
     }
 
     useEffect(() => {
         loadChatMessage();
-    }, [activeChat])
-
-    const messageList = activeChat?.messages?.map((message: IMessage) =>
-        (message.sender === currentUser?._id || message.sender?._id === currentUser?._id) ?
-        <div className="">
-            <div className="flex items-end justify-end">
-                <div className="flex flex-col space-y-2 text-sm max-w-xs mx-2 order-1 items-end">
-                    <span className="px-4 py-2 rounded-lg inline-block bg-blue-600 text-white text-left">
-                        {message.content}
-                    </span>
-                </div>
-            </div>
-        </div> :
-        <div className="">
-            <div className="flex items-end">
-                <div className="flex flex-col space-y-2 text-sm max-w-xs mx-2 order-2 items-start">
-                    <span className="px-4 py-2 rounded-lg inline-block bg-gray-300 text-gray-600">
-                        {message.content}
-                    </span>
-                </div>
-                <img src="" className="w-6 h-6 rounded-full order-1" />
-            </div>
-        </div>
-    )
+        console.log('loading message')
+    }, [chatId])
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="mb-auto top-0 w-full px-6 py-4 border-b">
-                <div>
-                    <img src="" className="w-6 h-6 rounded-full order-1 bg-gray-200" />
-                </div>
+        <div className="flex flex-col h-full absolute left-0 right-0 top-0 bottom-0">
+            <div className="mb-auto top-0 w-full px-6 py-4 border-b shrink-0">
+                { activeChat?.type === 'single' ?
+                    <UserChatHeader 
+                        user={userMap[activeChat?.participants?.[0]._id]}
+                    /> :
+                    <div className="flex gap-4">
+                        <img 
+                            src={activeChat?.avatar || emptyUserAvatar} 
+                            className="w-6 h-6 rounded-full bg-gray-200"
+                            onError={({ currentTarget }) => {
+                                currentTarget.onerror = null; // prevents looping
+                                currentTarget.src = emptyUserAvatar;
+                            }}
+                        />
+                        <div>
+                            <span className="font-bold">{ activeChat?.name || 'User' }</span>
+                        </div>
+                    </div>
+                }
             </div>
-            <div className="h-full overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
-                <div className="flex flex-col min-h-full justify-end py-6 px-6 space-y-4">{messageList}</div>
+            <div 
+                onClick={handleMessagesAreaClicked}
+                className="h-full overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch px-6 space-y-2"
+            >
+                { renderMessages(activeChat?.messages || []) }
             </div>
-            <div className="mt-auto bottom-0 w-full px-10 py-4 border-t">
+            <div className="mt-auto bottom-0 w-full px-10 py-4 border-t shrink-0">
                 <ChatMessagePrompt />
             </div>
         </div>

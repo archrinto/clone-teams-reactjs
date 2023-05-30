@@ -1,27 +1,37 @@
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/solid';
 import React, { useEffect, useState } from 'react';
-import { Chat, useFetchChatsQuery, useLazyFetchChatsQuery } from '../slices/apiSlice';
+import { Chat, IUser, useFetchChatsQuery, useLazyFetchChatMessagesQuery, useLazyFetchChatsQuery } from '../slices/apiSlice';
 import { useAppDispatch, useAppSelector } from '../hooks/hooks';
-import { setActiveChat, setChatList } from '../slices/chatSlice';
+import { setActiveChat, setChatList, setChatMessages } from '../slices/chatSlice';
+import ChatListItem from './ChatListItem';
+import { selectUserMap, setUserMap } from '../slices/userSlice';
 
 interface ChatListProps {
-    onChange: (chatId: string) => void,
-    activeChat: string | null
 }
 
-const ChatList: React.FC<ChatListProps> = ({ onChange }) => {  
+const ChatList: React.FC<ChatListProps> = ({ }) => {  
     const [ getChats, results ] = useLazyFetchChatsQuery();
     const chatList = useAppSelector((state) => state.chat.list);
+    const draftChat = useAppSelector((state) => state.chat.draftChat);
     const activeChat = useAppSelector((state) => state.chat.activeChat);
+    const [getChatMessages, chatMessagesResult] = useLazyFetchChatMessagesQuery();
+    const userMap = useAppSelector(selectUserMap);
     const dispatch = useAppDispatch();
+    const users: IUser[] = [];
 
-    const handleClick = (chat: Chat) => {
+    const handleClick = async (chat: Chat) => {
         dispatch(setActiveChat(chat))
     };
 
     useEffect(() => {
         if (results && results?.data) {
+            results?.data?.forEach((item) => {
+                item?.participants?.forEach((p) => {
+                    users.push(p);
+                })
+            });
             dispatch(setChatList(results?.data));
+            dispatch(setUserMap(users));
         }
     }, [results])
 
@@ -31,36 +41,27 @@ const ChatList: React.FC<ChatListProps> = ({ onChange }) => {
     }, []);
 
     return (
-        <div className="w-64 bg-gray-200">
+        <div className="w-64">
             <div className="p-4">
                 <h2 className="text-xl font-bold">Chat</h2>
             </div>
-            <ul className="divide-y divide-gray-300">
+            <ul className="p-1.5">
+                { draftChat ?
+                    <ChatListItem 
+                        key="draft"
+                        chat={draftChat} 
+                        isActive={activeChat?._id == draftChat._id} 
+                        onClick={handleClick}
+                    /> : null
+                }
                 {chatList.map((chat) => (
-                    <li
+                    <ChatListItem 
                         key={chat._id}
-                        className={`flex items-center p-4 cursor-pointer ${
-                            activeChat?._id === chat._id ? 'bg-gray-100' : ''
-                        }`}
-                        onClick={() => handleClick(chat)}
-                    >
-                    <img
-                        src={chat.avatar}
-                        alt={chat.name}
-                        className="w-8 h-8 rounded-full mr-2"
+                        chat={chat} 
+                        user={chat.type == 'single' ? userMap[chat?.participants?.[0]._id] : null}
+                        isActive={activeChat?._id == chat._id} 
+                        onClick={handleClick}
                     />
-                    <div className="flex-grow">
-                        <div className="flex items-center justify-between">
-                        <span className="font-bold">{chat.name}</span>
-                        { (chat?.unread_message || 0) > 0 && (
-                            <span className="text-sm text-white bg-red-500 rounded-full px-2 py-1">
-                            {chat.unread_message}
-                            </span>
-                        )}
-                        </div>
-                        <p className="text-sm text-gray-500">{chat.last_message}</p>
-                    </div>
-                    </li>
                 ))}
             </ul>
         </div>

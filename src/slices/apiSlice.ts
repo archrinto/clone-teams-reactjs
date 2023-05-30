@@ -5,21 +5,32 @@ import { RootState } from '../hooks/store';
 export interface IMessage {
     _id?: string | null,
     chat?: string | null,
-    sender?: User | null,
+    sender?: IUser | null,
     type?: string,
     content?: string,
     is_pinned?: boolean,
     is_edited?: boolean,
+    createdAt?: string,
+    updatedAt?: string
 }
 
 export interface Chat {
     _id: string,
     name?: string,
     user?: any,
+    type: string,
     avatar?: string,
-    last_message?: any,
-    unread_message?: number,
-    messages?: IMessage[]
+    unreadCount?: number,
+    messages?: IMessage[],
+    participants?: any[],
+    createdAt?: string,
+    updatedAt?: string
+}
+
+export interface IChatRequest {
+    type: string,
+    name: string | null,
+    participants: string[]
 }
 
 export interface LoginRequest {
@@ -33,17 +44,15 @@ export interface IMessageRequestParams {
     before?: string,
 }
 
-export interface UserResponse {
-    user: User
+export interface IUserResponse {
+    user: IUser
     token: string
 }
 
-export interface User {
+export interface IUser {
     _id: string,
-    first_name?: string,
-    last_name?: string,
+    name?: string,
     avatar?: string,
-    profile_status?: string,
     token?: string
 }
 
@@ -51,6 +60,11 @@ export interface IMessageRequest {
     type?: string,
     content?: string,
     chat?: string,
+}
+
+export interface IUserRequestParams {
+    search: string,
+    limit: number,
 }
 
 export const apiSlice = createApi({
@@ -82,13 +96,20 @@ export const apiSlice = createApi({
                 transformResponse: (response: { data: IMessage[] }, meta, arg) => response.data
             }),
 
-            login: builder.mutation<UserResponse, LoginRequest>({
+            fetchUsers: builder.query<IUser[], IUserRequestParams>({
+                query({ search, limit = 10 }) {
+                    return `/users?search=${search}&limit=${limit}`
+                },
+                transformResponse: (response: { data: IUser[] }, meta, arg) => response.data
+            }),
+
+            login: builder.mutation<IUserResponse, LoginRequest>({
                 query: (body) => ({
                     url: '/users/signin',
                     method: 'POST',
                     body
                 }),
-                transformResponse: (response: { data: UserResponse }, meta, arg) => response.data
+                transformResponse: (response: { data: IUserResponse }, meta, arg) => response.data
             }),
 
             sendChatMessage: builder.mutation<IMessage, IMessageRequest>({
@@ -98,6 +119,15 @@ export const apiSlice = createApi({
                     body
                 }),
                 transformResponse: (response: { data: IMessage }, meta, arg) => response.data
+            }),
+
+            createChat: builder.mutation<Chat, IChatRequest>({
+                query: (body) => ({
+                    url: `/chats`,
+                    method: 'POST',
+                    body
+                }),
+                transformResponse: (response: { data: Chat }, meta, arg) => response.data
             })
         }
     }
@@ -109,5 +139,7 @@ export const {
     useFetchChatMessagesQuery,
     useLazyFetchChatMessagesQuery,
     useLoginMutation,
-    useSendChatMessageMutation
+    useSendChatMessageMutation,
+    useLazyFetchUsersQuery,
+    useCreateChatMutation
 } = apiSlice;

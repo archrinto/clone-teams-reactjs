@@ -18,6 +18,11 @@ const LoginContainer: React.FC = () => {
     const user = await doLogin({ username, password }).unwrap();
     if (user) {
       dispatch(setCredentials(user));
+      
+      // save login session
+      localStorage.setItem('token', user.token);
+      localStorage.setItem('user', JSON.stringify(user.user));
+
       navigate('/');
 
       socket.auth = {
