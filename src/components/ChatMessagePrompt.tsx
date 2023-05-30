@@ -2,14 +2,15 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useState, useRef } from "react";
 import { Message } from "./ChatMessageContainer";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { addChatMessage, addNewChat, selectActiveChat, setActiveChat, setChatList, setDraftChat } from "../slices/chatSlice";
+import { addChatMessage, addNewChat, selectActiveChat, setActiveChat, setChatList, setChatMarkAsRead, setDraftChat } from "../slices/chatSlice";
 import { IMessage, useCreateChatMutation, useSendChatMessageMutation } from "../slices/apiSlice";
 import { selectCurrentUser } from "../slices/authSlice";
 
 interface IMessagePromptProps {
+    onMessageSent?: (message: IMessage) => void
 }
 
-const MessagePrompt: React.FC<IMessagePromptProps> = ({ }) => {
+const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
     const [value, setValue] = useState<string>('');
@@ -35,7 +36,7 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ }) => {
         if (!chatId) {
             const newChatData = {
                 name: null,
-                type: activeChat?.type || 'singel',
+                type: activeChat?.type || 'single',
                 participants: activeChat?.participants?.map(item => item._id) || [],
             }
             const newChat = await createChat(newChatData).unwrap();
@@ -48,9 +49,7 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ }) => {
         }
 
         const messageData = {
-            sender: {
-                _id: currentUser?._id || '',
-            },
+            sender: { _id: currentUser?._id || '' },
             chat: chatId,
             type,
             content: value
@@ -61,6 +60,8 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ }) => {
         // set timeout to prevent duplicated message if chat not created before
         setTimeout(async () => {
             const message = await sendMessage(messageData).unwrap();
+            if (typeof onMessageSent != 'undefined') onMessageSent(message);
+            dispatch(setChatMarkAsRead())
         }, 100)
     }
 

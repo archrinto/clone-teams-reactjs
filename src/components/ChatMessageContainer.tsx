@@ -59,7 +59,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
             }, true);
             dispatch(setChatMessages({chatId: activeChat._id, messages: result.data || [] }))
             setTimeout(() => {
-                // scrollToBottom()
+                scrollToBottom()
             }, 50)
         }
     }
@@ -69,7 +69,13 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
     }
 
     const scrollToBottom = (options: any = {}) => {
-        messagesEndRef.current?.scrollIntoView(options)
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+        }
+    }
+
+    const handleMessageSent = () => {
+        scrollToBottom();
     }
 
     const renderMessages = (messages: IMessage[]) => {
@@ -117,13 +123,14 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
                 }
             </div>
             <div 
+                ref={messagesEndRef}
                 onClick={handleMessagesAreaClicked}
-                className="h-full overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch px-6 space-y-2"
+                className="h-full overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch px-6 py-4 space-y-2"
             >
                 { renderMessages(activeChat?.messages || []) }
             </div>
             <div className="mt-auto bottom-0 w-full px-10 py-4 border-t shrink-0">
-                <ChatMessagePrompt />
+                <ChatMessagePrompt onMessageSent={handleMessageSent} />
             </div>
         </div>
     )

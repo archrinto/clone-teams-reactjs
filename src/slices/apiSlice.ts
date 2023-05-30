@@ -38,13 +38,19 @@ export interface LoginRequest {
     password: string
 }
 
+export interface RegisterRequest {
+    email: string
+    password: string
+    name: string
+}
+
 export interface IMessageRequestParams {
     chat_id: string,
     limit?: number,
     before?: string,
 }
 
-export interface IUserResponse {
+export interface ILoginResponse {
     user: IUser
     token: string
 }
@@ -53,7 +59,8 @@ export interface IUser {
     _id: string,
     name?: string,
     avatar?: string,
-    token?: string
+    token?: string,
+    email?: string,
 }
 
 export interface IMessageRequest {
@@ -103,13 +110,22 @@ export const apiSlice = createApi({
                 transformResponse: (response: { data: IUser[] }, meta, arg) => response.data
             }),
 
-            login: builder.mutation<IUserResponse, LoginRequest>({
+            register: builder.mutation<IUser, RegisterRequest>({
+                query: (body) => ({
+                    url: '/users/signup',
+                    method: 'POST',
+                    body
+                }),
+                transformResponse: (response: { data: IUser }, meta, arg) => response.data
+            }),
+
+            login: builder.mutation<ILoginResponse, LoginRequest>({
                 query: (body) => ({
                     url: '/users/signin',
                     method: 'POST',
                     body
                 }),
-                transformResponse: (response: { data: IUserResponse }, meta, arg) => response.data
+                transformResponse: (response: { data: ILoginResponse }, meta, arg) => response.data
             }),
 
             sendChatMessage: builder.mutation<IMessage, IMessageRequest>({
@@ -141,5 +157,6 @@ export const {
     useLoginMutation,
     useSendChatMessageMutation,
     useLazyFetchUsersQuery,
-    useCreateChatMutation
+    useCreateChatMutation,
+    useRegisterMutation
 } = apiSlice;

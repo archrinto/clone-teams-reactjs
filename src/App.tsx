@@ -12,6 +12,7 @@ import { selectCurrentUser, setCredentials } from './slices/authSlice';
 import { IUser } from './slices/apiSlice';
 import Header from './components/Header';
 import { addUserMap, setUserMap } from './slices/userSlice';
+import RegisterContainer from './components/RegisterContainer';
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
@@ -51,7 +52,7 @@ function App() {
         const user = userStr ? JSON.parse(userStr) : null;
         const token = localStorage.getItem('token') as string;
 
-        if (!token || !user) navigate('/');
+        if (!token || !user) return;
 
         dispatch(setCredentials({
             token,
@@ -85,6 +86,7 @@ function App() {
     <div className="App">
         <Routes>
           <Route path="/login" element={<LoginContainer />} />
+          <Route path="/register" element={<RegisterContainer />} />
           <Route path="*" element={<PrivateOutlet />}>
             <Route index element={
               <div className="h-screen flex flex-col">

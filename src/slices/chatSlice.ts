@@ -24,7 +24,7 @@ const chatSlice = createSlice({
         setDraftChat(state, action: PayloadAction<Chat | null>) {
             state.draftChat = action.payload ? {...action.payload} : action.payload;
         },
-        setChatMarkAsRead(state, action: PayloadAction<Chat | null>) {
+        setChatMarkAsRead(state, action: PayloadAction<Chat | null | undefined >) {
             const chatId = action.payload ? action.payload._id : state.activeChat?._id;
             if (chatId) {
                 const index = state.list.findIndex(item => item._id === chatId);
