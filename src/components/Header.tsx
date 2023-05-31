@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, Fragment } from 'react';
 import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
-import {  IUser, useLazyFetchUsersQuery } from '../slices/apiSlice';
+import { IUser, useLazyFetchUsersQuery, useChangeUserStatusMutation } from '../slices/apiSlice';
 import { useAppDispatch, useAppSelector } from '../hooks/hooks';
 import { setActiveChatByUser } from '../slices/chatSlice';
 import { selectCurrentUser, setCredentials } from '../slices/authSlice';
@@ -8,12 +8,14 @@ import { setUserMap } from '../slices/userSlice';
 import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import { useNavigate } from 'react-router-dom';
+import Avatar from './Avatar';
 
 const Header = () => {
     const debounce = 500;
     const [getUsers, { isLoading, data: users }] = useLazyFetchUsersQuery();
     const [isShowResult, setShowResult] = useState(false);
     const [keyword, setKeyword] = useState('');
+    const [userUpdateStatus, result] = useChangeUserStatusMutation();
     const refSearchBox = useRef<HTMLInputElement>(null);
     const currentUser = useAppSelector(selectCurrentUser);
     const dispatch = useAppDispatch();
@@ -43,6 +45,20 @@ const Header = () => {
         window.location.href = '/login'
     }
 
+    const handleChangeStatus = (status: any) => {
+        userUpdateStatus({
+            profileStatus: status.value
+        });
+    }
+
+    const statusOptions = [
+        { value: 'available' , text: 'Available' },
+        { value: 'busy' , text: 'Busy' },
+        { value: 'dnd' , text: 'Do not distrub' },
+        { value: 'away' , text: 'Away' },
+        { value: 'offline' , text: 'Appear offline' },
+    ];
+
     useEffect(() => {
         const searchTimeout = setTimeout(() => {
             doSearch(keyword.trim())
@@ -61,11 +77,11 @@ const Header = () => {
     }, [])
 
     return(
-        <div className="bg-indigo-700 flex items-center px-4 py-3">
-            <div className="w-80 mr-8 text-white">
+        <div className="bg-indigo-800 flex items-center">
+            <div className="w-80 mr-12 text-white px-4 py-3">
                 Left header
             </div>
-            <div className="flex-grow max-w-3xl relative">
+            <div className="flex-grow max-w-3xl relative py-3">
                 <div className="w-full" ref={refSearchBox}>
                     <input 
                         type="text" 
@@ -75,7 +91,7 @@ const Header = () => {
                         className="bg-gray-50 border border-gray-300 text-gray-900 rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full px-2 py-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     />
                     { isShowResult ? (
-                        <div className="z-40 absolute left-0 right-0 top-10">
+                        <div className="z-40 absolute left-0 right-0 top-13">
                             <div className="w-full bg-white border p-4 rounded-md drop-shadow-md flex flex-col gap-2">
                                 { users?.map((item) => 
                                     <button 
@@ -102,18 +118,15 @@ const Header = () => {
                     ) : null }
                 </div>
             </div>
-            <div className="w-72 ml-auto flex justify-end">
-                <Menu as="div" className="relative">
+            <div className="w-72 ml-auto flex justify-end h-full">
+                <Menu as="div" className="relative h-full">
                     <Menu.Button  
-                        className="flex items-center gap-2 text-white"
+                        className="flex items-center gap-2 text-white hover:bg-indigo-700 h-full px-4"
                     >
-                        <img
-                            src={currentUser?.avatar || emptyUserAvatar}
-                            className="w-8 h-8 rounded-full mr-2"
-                            onError={({ currentTarget }) => {
-                                currentTarget.onerror = null; // prevents looping
-                                currentTarget.src = emptyUserAvatar;
-                            }}
+                        <Avatar
+                            status={currentUser?.profileStatus}
+                            src={currentUser?.avatar}
+                            alt={currentUser?.name}
                         />
                         <div>
                             { currentUser?.name }
@@ -129,7 +142,7 @@ const Header = () => {
                         leaveTo="transform opacity-0 scale-95"
                     >
                         <Menu.Items 
-                            className="absolute z-50 -right-2 top-12 shadow-lg bg-white border w-72 rounded-md"
+                            className="absolute z-50 right-2 top-16 shadow-lg bg-white border w-72 rounded-md"
                         >
                             <Menu.Item
                                 as="div"
@@ -152,7 +165,7 @@ const Header = () => {
                                         <Menu as="div" className="relative inline-block text-left text-gray-600 text-sm">
                                             <div>
                                                 <Menu.Button className="inline-flex w-full items-center justify-center gap-x-1.5 rounded-md text-sm hover:bg-gray-50">
-                                                    Options
+                                                    { currentUser?.profileStatus || 'Change status'}
                                                     <ChevronDownIcon className="-mr-1 h-3 w-3 text-gray-400" aria-hidden="true" />
                                                 </Menu.Button>
                                             </div>
@@ -168,60 +181,21 @@ const Header = () => {
                                             >
                                                 <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 <div className="py-1">
-                                                    <Menu.Item>
-                                                    {({ active }) => (
-                                                        <a
-                                                        href="#"
-                                                        className={
-                                                                'block w-full px-4 py-2 text-left text-sm ' +
-                                                                (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700')
-                                                            }
-                                                        >
-                                                        Account settings
-                                                        </a>
-                                                    )}
-                                                    </Menu.Item>
-                                                    <Menu.Item>
-                                                    {({ active }) => (
-                                                        <a
-                                                        href="#"
-                                                        className={
-                                                                'block w-full px-4 py-2 text-left text-sm ' +
-                                                                (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700')
-                                                            }
-                                                        >
-                                                        Support
-                                                        </a>
-                                                    )}
-                                                    </Menu.Item>
-                                                    <Menu.Item>
-                                                    {({ active }) => (
-                                                        <a
-                                                        href="#"
-                                                        className={
-                                                                'block w-full px-4 py-2 text-left text-sm ' +
-                                                                (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700')
-                                                            }
-                                                        >
-                                                        License
-                                                        </a>
-                                                    )}
-                                                    </Menu.Item>
-                                                    <form method="POST" action="#">
-                                                    <Menu.Item>
-                                                        {({ active }) => (
-                                                        <button
-                                                            type="submit"
-                                                            className={
-                                                                'block w-full px-4 py-2 text-left text-sm ' +
-                                                                (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700')
-                                                            }
-                                                        >
-                                                            Sign out
-                                                        </button>
-                                                        )}
-                                                    </Menu.Item>
-                                                    </form>
+                                                    { statusOptions.map(item => 
+                                                        <Menu.Item>
+                                                            {({ active }) => (
+                                                                <button
+                                                                    onClick={ () => handleChangeStatus(item) }
+                                                                    className={
+                                                                            'block w-full px-4 py-2 text-left text-sm ' +
+                                                                            (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700')
+                                                                        }
+                                                                    >
+                                                                    { item.text }
+                                                                </button>
+                                                            )}
+                                                        </Menu.Item>
+                                                    )}                                                    
                                                 </div>
                                                 </Menu.Items>
                                             </Transition>

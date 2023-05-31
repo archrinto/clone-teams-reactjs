@@ -1,5 +1,6 @@
 import { IMessage, IUser } from "../slices/apiSlice";
 import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
+import Avatar from "./Avatar";
 
 interface IChatMessageItemProps {
     message: IMessage,
@@ -26,13 +27,9 @@ const ChatMessageItem = ({ message, sender, isMine }: IChatMessageItemProps) => 
                         {message.content}
                     </span>
                 </div>
-                <img 
-                    src={sender?.avatar || emptyUserAvatar} 
-                    className="w-6 h-6 rounded-full order-1"
-                    onError={({ currentTarget }) => {
-                        currentTarget.onerror = null; // prevents looping
-                        currentTarget.src = emptyUserAvatar;
-                    }}
+                <Avatar 
+                    src={sender?.avatar}
+                    alt={sender?.name}
                 />
             </div>
         </div>

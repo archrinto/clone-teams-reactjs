@@ -8,10 +8,10 @@ import { PrivateOutlet } from './utils/PrivateOutlet';
 import { useEffect } from 'react';
 import { socket } from './socket';
 import { addChatMessage, addNewChat } from './slices/chatSlice';
-import { selectCurrentUser, setCredentials } from './slices/authSlice';
+import { selectCurrentUser, setCredentials, updateCurrentUserStatus } from './slices/authSlice';
 import { IUser } from './slices/apiSlice';
 import Header from './components/Header';
-import { addUserMap, setUserMap } from './slices/userSlice';
+import { addUserMap, changeUserStatus, setUserMap } from './slices/userSlice';
 import RegisterContainer from './components/RegisterContainer';
 
 function App() {
@@ -44,6 +44,17 @@ function App() {
             dispatch(addNewChat(chat));
         })
 
+        socket.on('profile_status_change', (user) => {
+            dispatch(changeUserStatus({ 
+                userId: user._id,
+                profileStatus: user.profileStatus 
+            }));
+
+            if (getCurrentUserId() === user._id) {
+                dispatch(updateCurrentUserStatus(user.profileStatus));
+            }
+        })
+
         socket.connect();
     }
 
@@ -58,6 +69,8 @@ function App() {
             token,
             user
         }));
+
+        dispatch(addUserMap(user));
 
         socket.auth = {
             token: token
@@ -79,6 +92,7 @@ function App() {
             socket.off('new_message');
             socket.off('new_chat');
             socket.off('connect');
+            socket.off('profile_status_change');
         }
     }, [currentUser])
 

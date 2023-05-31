@@ -1,7 +1,5 @@
-import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
-import { useAppDispatch } from '../hooks/hooks';
 import { Chat, IUser } from '../slices/apiSlice';
-import { setActiveChat } from '../slices/chatSlice';
+import Avatar from './Avatar';
 
 export interface IChatListItemProps {
     chat: Chat,
@@ -52,14 +50,10 @@ const ChatListItem = ({chat, user, isActive, onClick, currentUserId}: IChatListI
             }`}
             onClick={() => handleClick(chat)}
         >
-            <img
-                src={chat.avatar || emptyUserAvatar}
-                alt={chat.name}
-                className="w-8 h-8 rounded-full mr-2"
-                onError={({ currentTarget }) => {
-                    currentTarget.onerror = null; // prevents looping
-                    currentTarget.src = emptyUserAvatar;
-                }}
+            <Avatar
+                status={user?.profileStatus || ''}
+                src={user?.avatar || chat.avatar}
+                alt={user?.name || chat.name}
             />
             <div className={'flex-grow ' + (chat?.unreadCount ? 'font-semibold text-gray-800' : 'text-gray-600')}>
                 <div className="flex items-center justify-between leading-none">

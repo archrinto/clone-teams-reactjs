@@ -19,10 +19,15 @@ const slice = createSlice({
       state.user = user
       state.token = token
     },
+    updateCurrentUserStatus(state, action: PayloadAction<string>) {
+      if (state.user) {
+        state.user.profileStatus = action.payload;
+      }
+    }
   },
 })
 
-export const { setCredentials } = slice.actions
+export const { setCredentials, updateCurrentUserStatus } = slice.actions
 
 export default slice.reducer
 

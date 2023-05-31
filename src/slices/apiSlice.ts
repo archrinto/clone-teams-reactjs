@@ -62,6 +62,7 @@ export interface IUser {
     avatar?: string,
     token?: string,
     email?: string,
+    profileStatus?: string,
 }
 
 export interface IMessageRequest {
@@ -73,6 +74,16 @@ export interface IMessageRequest {
 export interface IUserRequestParams {
     search: string,
     limit: number,
+}
+
+export interface IChangeStatusRequest {
+    profileStatus: string,
+}
+
+export interface IUpdateProfileRequest {
+    name?: string,
+    avatar?: string,
+    email?: string,
 }
 
 export const apiSlice = createApi({
@@ -145,6 +156,24 @@ export const apiSlice = createApi({
                     body
                 }),
                 transformResponse: (response: { data: Chat }, meta, arg) => response.data
+            }),
+
+            updateUserProfile: builder.mutation<IUser, IUpdateProfileRequest>({
+                query: (body) => ({
+                    url: `/users/me`,
+                    method: 'PUT',
+                    body
+                }),
+                transformResponse: (response: { data: IUser }, meta, arg) => response.data
+            }),
+
+            changeUserStatus: builder.mutation<IUser, IChangeStatusRequest>({
+                query: (body) => ({
+                    url: `/users/me/status`,
+                    method: 'PUT',
+                    body
+                }),
+                transformResponse: (response: { data: IUser }, meta, arg) => response.data
             })
         }
     }
@@ -159,5 +188,7 @@ export const {
     useSendChatMessageMutation,
     useLazyFetchUsersQuery,
     useCreateChatMutation,
-    useRegisterMutation
+    useRegisterMutation,
+    useChangeUserStatusMutation,
+    useUpdateUserProfileMutation
 } = apiSlice;

@@ -1,4 +1,4 @@
-import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
+import { PaperAirplaneIcon, PaperClipIcon } from "@heroicons/react/24/solid";
 import { useState, useRef } from "react";
 import { Message } from "./ChatMessageContainer";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
@@ -92,9 +92,13 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
                     />
                 </div>
                 <div className="flex items-center text-gray-500">
-                    <div></div>
-                    <div className="flex items-end ml-auto">
-                        <button type="button" className="p-1" onClick={() => handleSendMessage() }>
+                    <div className="flex items-center">
+                        <button type="button" className="p-1 hover:text-indigo-700" onClick={() => console.log('send message') }>
+                            <PaperClipIcon className="h-5 w-5" />
+                        </button>
+                    </div>
+                    <div className="flex items-center justify-end ml-auto">
+                        <button type="button" className="p-1 hover:text-indigo-700" onClick={() => handleSendMessage() }>
                             <PaperAirplaneIcon className="h-5 w-5" />
                         </button>
                     </div>

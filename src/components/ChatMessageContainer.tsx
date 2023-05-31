@@ -8,6 +8,7 @@ import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
 import { selectUserMap } from "../slices/userSlice";
 import ChatMessageItem from "./ChatMessageItem";
 import { ArrowUpOnSquareStackIcon,  UserPlusIcon } from "@heroicons/react/24/outline";
+import Avatar from "./Avatar";
 
 export interface Message {
     type?: string,
@@ -27,13 +28,9 @@ interface ChatMessageContainerProps {
 const UserChatHeader = ({ user }: any) => {
     return (
         <div className="flex gap-4">
-            <img 
-                src={user?.avatar || emptyUserAvatar} 
-                className="w-6 h-6 rounded-full bg-gray-200"
-                onError={({ currentTarget }) => {
-                    currentTarget.onerror = null; // prevents looping
-                    currentTarget.src = emptyUserAvatar;
-                }}
+            <Avatar 
+                src={user?.avatar} 
+                alt={user?.name}
             />
             <div>
                 <span className="font-bold">{ user?.name || 'User' }</span>

@@ -32,10 +32,17 @@ const userSlice = createSlice({
                 ...state.userMap[action.payload._id],
                 ...action.payload
             }
+        },
+        changeUserStatus(state, action: PayloadAction<{ userId: string, profileStatus: string }>) {
+            state.userMap[action.payload.userId] = {
+                ...state.userMap[action.payload.userId],
+                profileStatus: action.payload.profileStatus
+            }
+            console.log(state.userMap[action.payload.userId]);
         }
     }
 });
 
-export const { setUserMap, addUserMap } = userSlice.actions;
+export const { setUserMap, addUserMap, changeUserStatus } = userSlice.actions;
 export default userSlice.reducer;
 export const selectUserMap = (state: RootState) => state.users.userMap
