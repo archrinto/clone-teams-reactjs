@@ -62,10 +62,10 @@ const Header = () => {
 
     return(
         <div className="bg-indigo-700 flex items-center px-4 py-3">
-            <div className="w-80 text-white">
+            <div className="w-80 mr-8 text-white">
                 Left header
             </div>
-            <div className="flex-grow max-w-3xl mr-6 relative">
+            <div className="flex-grow max-w-3xl relative">
                 <div className="w-full" ref={refSearchBox}>
                     <input 
                         type="text" 

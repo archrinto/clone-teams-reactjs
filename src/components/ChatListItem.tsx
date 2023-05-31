@@ -7,13 +7,16 @@ export interface IChatListItemProps {
     chat: Chat,
     user?: IUser,
     isActive: boolean,
-    onClick: any | void
+    onClick: any | void,
+    currentUserId?: string
 }
 
-const ChatListItem = ({chat, user, isActive, onClick}: IChatListItemProps) => {
+const ChatListItem = ({chat, user, isActive, onClick, currentUserId}: IChatListItemProps) => {
     const handleClick = (chat: Chat) => {
         onClick(chat);
     };
+
+    const lastMessage = chat?.messages?.[chat?.messages?.length - 1] || null;
 
     const formatDateTime = (utcDateString: string) => {
         const utcDate = new Date(utcDateString);
@@ -45,7 +48,7 @@ const ChatListItem = ({chat, user, isActive, onClick}: IChatListItemProps) => {
         <li
             key={chat._id}
             className={`flex items-center p-2 cursor-pointer rounded-md ${
-                isActive ? 'bg-gray-100' : ''
+                isActive ? 'bg-white' : ''
             }`}
             onClick={() => handleClick(chat)}
         >
@@ -66,7 +69,7 @@ const ChatListItem = ({chat, user, isActive, onClick}: IChatListItemProps) => {
                     </span>
                 </div>
                 <p className="text-sm leading-none">
-                    {chat?.messages?.[chat?.messages?.length - 1]?.content || <i>No message</i>}
+                    { lastMessage?.sender?._id === currentUserId ? 'You: ' : '' } {lastMessage?.content || <i>No message</i>}
                 </p>
             </div>
         </li>

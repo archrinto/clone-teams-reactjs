@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '../hooks/hooks';
 import { setActiveChat, setChatList, setChatMessages } from '../slices/chatSlice';
 import ChatListItem from './ChatListItem';
 import { selectUserMap, setUserMap } from '../slices/userSlice';
+import { selectCurrentUser } from '../slices/authSlice';
 
 interface ChatListProps {
 }
@@ -16,6 +17,7 @@ const ChatList: React.FC<ChatListProps> = ({ }) => {
     const activeChat = useAppSelector((state) => state.chat.activeChat);
     const [getChatMessages, chatMessagesResult] = useLazyFetchChatMessagesQuery();
     const userMap = useAppSelector(selectUserMap);
+    const currentUser = useAppSelector(selectCurrentUser);
     const dispatch = useAppDispatch();
     const users: IUser[] = [];
 
@@ -41,7 +43,7 @@ const ChatList: React.FC<ChatListProps> = ({ }) => {
     }, []);
 
     return (
-        <div className="w-64">
+        <div className="w-72">
             <div className="p-4">
                 <h2 className="text-xl font-bold">Chat</h2>
             </div>
@@ -60,6 +62,7 @@ const ChatList: React.FC<ChatListProps> = ({ }) => {
                         chat={chat} 
                         user={chat.type == 'single' ? userMap[chat?.participants?.[0]._id] : null}
                         isActive={activeChat?._id == chat._id} 
+                        currentUserId={currentUser?._id}
                         onClick={handleClick}
                     />
                 ))}

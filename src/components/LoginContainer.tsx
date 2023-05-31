@@ -34,7 +34,7 @@ const LoginContainer: React.FC = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="max-w-md w-full px-6 py-8 bg-white shadow-md">
+            <div className="max-w-md w-full px-6 py-8 bg-white shadow-md rounded-md">
                 <h2 className="text-3xl font-semibold mb-6">Login</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">

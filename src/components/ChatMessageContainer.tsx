@@ -7,6 +7,7 @@ import ChatMessagePrompt from "./ChatMessagePrompt";
 import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
 import { selectUserMap } from "../slices/userSlice";
 import ChatMessageItem from "./ChatMessageItem";
+import { ArrowUpOnSquareStackIcon,  UserPlusIcon } from "@heroicons/react/24/outline";
 
 export interface Message {
     type?: string,
@@ -102,7 +103,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
 
     return (
         <div className="flex flex-col h-full absolute left-0 right-0 top-0 bottom-0">
-            <div className="mb-auto top-0 w-full px-6 py-4 border-b shrink-0">
+            <div className="flex justify-between items-center mb-auto top-0 w-full px-6 py-4 border-b shrink-0 text-gray-600">
                 { activeChat?.type === 'single' ?
                     <UserChatHeader 
                         user={userMap[activeChat?.participants?.[0]._id]}
@@ -117,10 +118,23 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
                             }}
                         />
                         <div>
-                            <span className="font-bold">{ activeChat?.name || 'User' }</span>
+                            <span className="font-bold text-gray-800">{ activeChat?.name || 'User' }</span>
                         </div>
                     </div>
                 }
+                <div className="flex self-end gap-4 items-center">
+                    <div>
+                        <button className="flex items-center gap-1 hover:text-indigo-700 text-sm hover:font-bold">
+                            <UserPlusIcon className="h-5 w-5" />
+                            <span>{ activeChat?.participantCount }</span>
+                        </button>
+                    </div>
+                    <div>
+                        <button className="flex items-center gap-1 hover:text-indigo-700 text-sm">
+                            <ArrowUpOnSquareStackIcon className="h-5 w-5" />
+                        </button>
+                    </div>
+                </div>
             </div>
             <div 
                 ref={messagesEndRef}
