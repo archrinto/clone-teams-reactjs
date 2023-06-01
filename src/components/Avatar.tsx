@@ -40,7 +40,7 @@ const Avatar = ({ status, src, alt }: IAvatarProps) => {
     }
 
     return (
-        <div className="relative">
+        <div className="relative flex-none">
             <img
                 src={src || emptyUserAvatar}
                 alt={alt || 'Avatar'}

@@ -6,12 +6,14 @@ interface ChatState {
     list: Chat[],
     activeChat: Chat | null
     draftChat: Chat | null,
+    replyMessage: IMessage | null,
 }
 
 const initialState: ChatState = {
     list: [],
     activeChat: null,
     draftChat: null,
+    replyMessage: null,
 }
 
 const chatSlice = createSlice({
@@ -97,6 +99,9 @@ const chatSlice = createSlice({
                 }
                 state.list[index]?.messages?.push(action.payload.message);
             }
+        },
+        setReplyMessage(state, action: PayloadAction<IMessage | null>) {
+            state.replyMessage = action.payload
         }
     }
 });
@@ -109,7 +114,8 @@ export const {
     addChatMessage,
     addNewChat,
     setActiveChatByUser,
-    setChatMarkAsRead
+    setChatMarkAsRead,
+    setReplyMessage
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

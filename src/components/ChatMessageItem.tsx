@@ -1,6 +1,7 @@
 import { IMessage, IUser } from "../slices/apiSlice";
 import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
 import Avatar from "./Avatar";
+import ChatMessageItemReply from "./ChatMessageItemReply";
 
 interface IChatMessageItemProps {
     message: IMessage,
@@ -27,9 +28,15 @@ const ChatMessageItem = ({ message, sender, isMine, onContextMenu }: IChatMessag
                         handleContextMenu(event, message)
                     }}
                 >
-                    <span className="px-4 py-2 rounded-lg inline-block bg-indigo-200 text-left">
+                    <div className="px-3 py-2 rounded-lg inline-block bg-indigo-100 text-left">
+                        { message?.replyTo ? 
+                            <ChatMessageItemReply 
+                                canCancel={false}
+                                message={message.replyTo}
+                            /> : null
+                        }
                         {message.content}
-                    </span>
+                    </div>
                 </div>
             </div>
         </div> :
@@ -41,9 +48,15 @@ const ChatMessageItem = ({ message, sender, isMine, onContextMenu }: IChatMessag
                         handleContextMenu(event, message)
                     }}
                 >
-                    <span className="px-4 py-2 rounded-lg inline-block bg-white text-gray-600">
+                    <div className="px-3 py-2 rounded-lg inline-block bg-white text-gray-600">
+                        { message?.replyTo ? 
+                            <ChatMessageItemReply 
+                                canCancel={false}
+                                message={message.replyTo}
+                            /> : null
+                        }
                         {message.content}
-                    </span>
+                    </div>
                 </div>
                 <Avatar 
                     status={sender?.profileStatus}

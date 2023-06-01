@@ -8,6 +8,7 @@ export interface IMessage {
     sender?: IUser | null,
     type?: string,
     content?: string,
+    replyTo?: IMessage,
     is_pinned?: boolean,
     is_edited?: boolean,
     createdAt?: string,

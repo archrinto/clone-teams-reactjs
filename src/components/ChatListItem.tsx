@@ -55,14 +55,14 @@ const ChatListItem = ({chat, user, isActive, onClick, currentUserId}: IChatListI
                 src={user?.avatar || chat.avatar}
                 alt={user?.name || chat.name}
             />
-            <div className={'flex-grow ' + (chat?.unreadCount ? 'font-semibold text-gray-800' : 'text-gray-600')}>
-                <div className="flex items-center justify-between leading-none">
-                    <span className="">{ user ? user?.name : chat?.name }</span>
+            <div className={'flex-grow overflow-hidden ' + (chat?.unreadCount ? 'font-semibold text-gray-800' : 'text-gray-600')}>
+                <div className="flex gap-1 items-center justify-between">
+                    <span className="truncate">{ user ? user?.name : chat?.name }</span>
                     <span className='text-sm'>
                         { getChatDatetime(chat) }
                     </span>
                 </div>
-                <p className="text-sm leading-none">
+                <p className="text-sm leading-none truncate">
                     { lastMessage?.sender?._id === currentUserId ? 'You: ' : '' } {lastMessage?.content || <i>No message</i>}
                 </p>
             </div>

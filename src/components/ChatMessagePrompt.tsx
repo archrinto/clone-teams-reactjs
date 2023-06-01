@@ -1,10 +1,12 @@
 import { PaperAirplaneIcon, PaperClipIcon } from "@heroicons/react/24/solid";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Message } from "./ChatMessageContainer";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { addChatMessage, addNewChat, selectActiveChat, setActiveChat, setChatList, setChatMarkAsRead, setDraftChat } from "../slices/chatSlice";
+import { addChatMessage, addNewChat, selectActiveChat, setActiveChat, setChatList, setChatMarkAsRead, setDraftChat, setReplyMessage } from "../slices/chatSlice";
 import { IMessage, useCreateChatMutation, useSendChatMessageMutation } from "../slices/apiSlice";
 import { selectCurrentUser } from "../slices/authSlice";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import ChatMessageItemReply from "./ChatMessageItemReply";
 
 interface IMessagePromptProps {
     onMessageSent?: (message: IMessage) => void
@@ -20,6 +22,7 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
     const dispatch = useAppDispatch();
     const [sendMessage, { isLoading }] = useSendChatMessageMutation();
     const [createChat, { isLoading: isLoadingCreateChat }] = useCreateChatMutation();
+    const replyMessage = useAppSelector(state => state.chat.replyMessage);
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setValue(event.target.value);
@@ -52,7 +55,8 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
             sender: { _id: currentUser?._id || '' },
             chat: chatId,
             type,
-            content: value
+            content: value,
+            replyTo: replyMessage
         };
 
         setValue('');
@@ -61,8 +65,13 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
         setTimeout(async () => {
             const message = await sendMessage(messageData).unwrap();
             if (typeof onMessageSent != 'undefined') onMessageSent(message);
+            if (replyMessage) dispatch(setReplyMessage(null));
             dispatch(setChatMarkAsRead())
         }, 100)
+    }
+
+    const handleCancelReply = () => {
+        dispatch(setReplyMessage(null));
     }
 
     const adjustTextAreaHeight = () => {
@@ -76,9 +85,16 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
         <div>
             <form onSubmit={(event) => { event.preventDefault(); } } ref={formRef}>
                 <div className="">
+                    { replyMessage ? 
+                        <ChatMessageItemReply 
+                            onCancel={handleCancelReply}
+                            canCancel={true}
+                            message={replyMessage}
+                        /> : null
+                    }
                     <textarea
                         ref={textareaRef}
-                        className="w-full bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full text-sm bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         rows={1}
                         placeholder="Enter your text here..."
                         value={value}

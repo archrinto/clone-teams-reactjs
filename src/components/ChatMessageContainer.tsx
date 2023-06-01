@@ -10,6 +10,7 @@ import ChatMessageItem from "./ChatMessageItem";
 import { ArrowUpOnSquareStackIcon,  ArrowUturnLeftIcon,  EyeSlashIcon,  TagIcon,  TrashIcon,  UserPlusIcon } from "@heroicons/react/24/outline";
 import Avatar from "./Avatar";
 import useOnOutsideClick from "../hooks/useOnOutsideClick";
+import ChatMessageContextMenu from "./ChatMessageContextMenu";
 
 export interface Message {
     type?: string,
@@ -64,6 +65,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
     const [selectedMessage, setSelectedMessage] = useState<IMessage | null>(null)
     const [messageContextMenu, setMessageContextMenu] = useState<IContextMenuState>(initialContextMenuState);
     const messageContextMenuRef = useRef<HTMLDivElement>(null);
+    const [replyMessage, setReplyMessage] = useState<IMessage | null>(null);
 
     const loadChatMessage = async () => {
         if (activeChat?._id && activeChat) {
@@ -79,7 +81,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
         }
     }
 
-    const handleMessageContextMenuOutsideClick = () => {
+    const closeMessageContextMenu = () => {
         setSelectedMessage(null);
         setMessageContextMenu({
             show: false,
@@ -114,7 +116,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
 
         // Adjust the position if the menu exceeds the window boundaries
         const adjustedPosX = event.pageX + menuWidth > windowWidth ? windowWidth - (menuWidth + 60): event.pageX;
-        const adjustedPosY = event.pageY + menuHeight > windowHeight ? windowHeight - (menuHeight + 60): event.pageY;
+        const adjustedPosY = event.pageY + menuHeight > windowHeight ? windowHeight - (menuHeight): event.pageY;
 
         setMessageContextMenu({
             show: true,
@@ -141,7 +143,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
         })
     }
 
-    useOnOutsideClick(messageContextMenuRef, handleMessageContextMenuOutsideClick);
+    useOnOutsideClick(messageContextMenuRef, closeMessageContextMenu);
 
     useEffect(() => {
         loadChatMessage();
@@ -193,48 +195,20 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
                 </div>
 
                 { messageContextMenu.show && selectedMessage ? (
-                    <div
+                    <ChatMessageContextMenu 
+                        pageX={messageContextMenu.pageX}
+                        pageY={messageContextMenu.pageY}
                         ref={messageContextMenuRef}
-                        className="fixed bg-white shadow-lg p-2 rounded-md border w-48 text-sm text-gray-800"
-                        style={{
-                            top: messageContextMenu.pageY + 'px',
-                            left: messageContextMenu.pageX + 'px',
-                        }}
-                    >
-                        <ul>
-                            <li>
-                                <button className="w-full py-1.5 px-3 hover:text-indigo-600 flex items-center gap-3 hover:bg-gray-100 rounded-md">
-                                    <ArrowUturnLeftIcon className="h-5 w-5" />
-                                    <span>Reply</span>
-                                </button>
-                            </li>
-                            { selectedMessage?.sender?._id == currentUser?._id ?
-                                <li>
-                                    <button className="w-full py-1.5 px-3 hover:text-indigo-600 flex items-center gap-3 hover:bg-gray-100 rounded-md">
-                                        <TrashIcon className="h-5 w-5" />
-                                        <span>Delete</span>
-                                    </button>
-                                </li> : null
-                            }
-                            <li>
-                                <button className="w-full py-1.5 px-3 hover:text-indigo-600 flex items-center gap-3 hover:bg-gray-100 rounded-md">
-                                    <TagIcon className="h-5 w-5" />
-                                    <span>Pin</span>
-                                </button>
-                            </li>
-                            <li className="border-t w-full my-2"></li>
-                            <li>
-                                <button className="w-full py-1.5 px-3 hover:text-indigo-600 flex items-center gap-3 hover:bg-gray-100 rounded-md">
-                                    <EyeSlashIcon className="h-5 w-5" />
-                                    <span>Mark as unread</span>
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
+                        message={selectedMessage}
+                        isMine={selectedMessage?.sender?._id === currentUser?._id}
+                        onClickAction={closeMessageContextMenu}
+                    />
                 ) : null }
             </div>
             <div className="mt-auto bottom-0 w-full px-10 py-4 border-t shrink-0">
-                <ChatMessagePrompt onMessageSent={handleMessageSent} />
+                <ChatMessagePrompt 
+                    onMessageSent={handleMessageSent}
+                />
             </div>
         </div>
     )
