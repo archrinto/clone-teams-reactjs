@@ -45,19 +45,19 @@ const Header = () => {
         window.location.href = '/login'
     }
 
-    const handleChangeStatus = (status: any) => {
+    const handleChangeStatus = (status: string) => {
         userUpdateStatus({
-            profileStatus: status.value
+            profileStatus: status
         });
     }
 
-    const statusOptions = [
-        { value: 'available' , text: 'Available' },
-        { value: 'busy' , text: 'Busy' },
-        { value: 'dnd' , text: 'Do not distrub' },
-        { value: 'away' , text: 'Away' },
-        { value: 'offline' , text: 'Appear offline' },
-    ];
+    const statusOptions: any = {
+        available: 'Available',
+        busy: 'Busy',
+        dnd: 'Do not distrub',
+        away: 'Away',
+        offline: 'Appear offline',
+    }
 
     useEffect(() => {
         const searchTimeout = setTimeout(() => {
@@ -79,7 +79,7 @@ const Header = () => {
     return(
         <div className="bg-indigo-800 flex items-center">
             <div className="w-80 mr-12 text-white px-4 py-3">
-                Left header
+                Clone Teams
             </div>
             <div className="flex-grow max-w-3xl relative py-3">
                 <div className="w-full" ref={refSearchBox}>
@@ -165,7 +165,7 @@ const Header = () => {
                                         <Menu as="div" className="relative inline-block text-left text-gray-600 text-sm">
                                             <div>
                                                 <Menu.Button className="inline-flex w-full items-center justify-center gap-x-1.5 rounded-md text-sm hover:bg-gray-50">
-                                                    { currentUser?.profileStatus || 'Change status'}
+                                                    { statusOptions?.[currentUser?.profileStatus || ''] || 'Change status'}
                                                     <ChevronDownIcon className="-mr-1 h-3 w-3 text-gray-400" aria-hidden="true" />
                                                 </Menu.Button>
                                             </div>
@@ -181,7 +181,7 @@ const Header = () => {
                                             >
                                                 <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 <div className="py-1">
-                                                    { statusOptions.map(item => 
+                                                    { Object.keys(statusOptions).map((item) => 
                                                         <Menu.Item>
                                                             {({ active }) => (
                                                                 <button
@@ -191,7 +191,7 @@ const Header = () => {
                                                                             (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700')
                                                                         }
                                                                     >
-                                                                    { item.text }
+                                                                    { statusOptions[item] }
                                                                 </button>
                                                             )}
                                                         </Menu.Item>

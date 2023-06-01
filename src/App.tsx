@@ -81,6 +81,7 @@ function App() {
 
     useEffect(() => {    
         checkLoggedinUser();
+        
     }, []);
 
     useEffect(() => {
