@@ -23,7 +23,7 @@ const ChatMessageItem = ({ message, sender, isMine, onContextMenu }: IChatMessag
         <div className="" key={message._id}>
             <div className="flex items-end justify-end">
                 <div 
-                    className="flex flex-col space-y-2 text-sm max-w-xs mx-2 order-1 items-end"
+                    className="flex flex-col space-y-2 text-sm max-w-md mx-2 order-1 items-end"
                     onContextMenu={(event) => {
                         handleContextMenu(event, message)
                     }}
@@ -43,7 +43,7 @@ const ChatMessageItem = ({ message, sender, isMine, onContextMenu }: IChatMessag
         <div className="" key={message._id}>
             <div className="flex items-end">
                 <div 
-                    className="flex flex-col space-y-2 text-sm max-w-xs mx-2 order-2 items-start"
+                    className="flex flex-col space-y-2 text-sm max-w-md mx-2 order-2 items-start"
                     onContextMenu={(event) => {
                         handleContextMenu(event, message)
                     }}

@@ -40,13 +40,13 @@ const chatSlice = createSlice({
         },
         setActiveChatByUser(state, action: PayloadAction<IUser>){
             const user = action.payload;
-            const chat = state.list.filter((item) => item?.type == 'single' && item?.participants?.[0]?._id == user._id);
+            const chat = state.list.filter((item) => item?.chatType == 'single' && item?.participants?.[0]?._id == user._id);
             if (chat?.[0]) {
                 state.activeChat = chat[0];
             } else {
                 state.draftChat = {
                     _id: '',
-                    type: 'single',
+                    chatType: 'single',
                     name: user.name,
                     avatar: user.avatar,
                     participants: [{
@@ -65,6 +65,22 @@ const chatSlice = createSlice({
             const index = state.list.findIndex(item => item._id === action.payload._id);
             if (index === -1) {
                 state.list = [action.payload, ...state.list];
+            }
+        },
+        updateChat(state, action: PayloadAction<{chatId: string, chat:Chat}>) {
+            const index = state.list.findIndex(item => item._id === action.payload.chatId);
+            if (index !== -1) {
+                if (state.activeChat?._id === action.payload.chatId) {
+                    state.activeChat = {
+                        ...state.activeChat,
+                        ...action.payload.chat
+                    }
+                }
+
+                state.list[index] = {
+                    ...state.list[index],
+                    ...action.payload.chat
+                }
             }
         },
         setChatMessages(state, action: PayloadAction<{chatId: string, messages: IMessage[]}>) {
@@ -113,6 +129,7 @@ export const {
     setChatMessages,
     addChatMessage,
     addNewChat,
+    updateChat,
     setActiveChatByUser,
     setChatMarkAsRead,
     setReplyMessage

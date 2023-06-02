@@ -11,6 +11,7 @@ import { ArrowUpOnSquareStackIcon,  ArrowUturnLeftIcon,  EyeSlashIcon,  TagIcon,
 import Avatar from "./Avatar";
 import useOnOutsideClick from "../hooks/useOnOutsideClick";
 import ChatMessageContextMenu from "./ChatMessageContextMenu";
+import ChatMessageParticipantMenu from "./ChatMessageParticipantMenu";
 
 export interface Message {
     type?: string,
@@ -41,7 +42,7 @@ const initialContextMenuState = {
 
 const UserChatHeader = ({ user }: any) => {
     return (
-        <div className="flex gap-4">
+        <div className="flex gap-2 items-center">
             <Avatar 
                 status={user?.profileStatus}
                 src={user?.avatar} 
@@ -152,8 +153,8 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
 
     return (
         <div className="flex flex-col h-full absolute left-0 right-0 top-0 bottom-0">
-            <div className="flex justify-between items-center mb-auto top-0 w-full px-6 py-4 border-b shrink-0 text-gray-600">
-                { activeChat?.type === 'single' ?
+            <div className="flex justify-between items-center mb-auto top-0 w-full px-4 py-3 border-b shrink-0 text-gray-600">
+                { activeChat?.chatType === 'single' ?
                     <UserChatHeader 
                         user={userMap[activeChat?.participants?.[0]._id]}
                     /> :
@@ -173,10 +174,10 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
                 }
                 <div className="flex gap-4 items-center">
                     <div>
-                        <button className="flex items-center gap-1 hover:text-indigo-700 text-sm hover:font-bold">
-                            <UserPlusIcon className="h-5 w-5" />
-                            <span>{ activeChat?.participantCount }</span>
-                        </button>
+                        <ChatMessageParticipantMenu
+                            chat={activeChat}
+                            currentUser={currentUser}
+                        />
                     </div>
                     <div>
                         <button className="flex items-center gap-1 hover:text-indigo-700 text-sm">

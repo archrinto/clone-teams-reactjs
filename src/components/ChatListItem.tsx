@@ -42,6 +42,11 @@ const ChatListItem = ({chat, user, isActive, onClick, currentUserId}: IChatListI
         return strDate ? formatDateTime(strDate) : '';
     }
 
+    let defaultChatName = '';
+    if (chat?.chatType !== 'single' && !chat?.name) {
+        defaultChatName = chat?.participants?.map(item => item.name?.split(' ')?.[0] || '').join(', ') || '';
+    }
+
     return (
         <li
             key={chat._id}
@@ -53,17 +58,17 @@ const ChatListItem = ({chat, user, isActive, onClick, currentUserId}: IChatListI
             <Avatar
                 status={user?.profileStatus || ''}
                 src={user?.avatar || chat.avatar}
-                alt={user?.name || chat.name}
+                alt={user?.name || chat.name || defaultChatName}
             />
             <div className={'flex-grow overflow-hidden ' + (chat?.unreadCount ? 'font-semibold text-gray-800' : 'text-gray-600')}>
                 <div className="flex gap-1 items-center justify-between">
-                    <span className="truncate">{ user ? user?.name : chat?.name }</span>
+                    <span className="truncate">{ user ? user?.name : (chat?.name || defaultChatName) }</span>
                     <span className='text-sm'>
                         { getChatDatetime(chat) }
                     </span>
                 </div>
-                <p className="text-sm leading-none truncate">
-                    { lastMessage?.sender?._id === currentUserId ? 'You: ' : '' } {lastMessage?.content || <i>No message</i>}
+                <p className="text-sm truncate">
+                    { currentUserId && lastMessage?.sender?._id === currentUserId ? 'You: ' : '' } {lastMessage?.content || <i>No message</i>}
                 </p>
             </div>
         </li>

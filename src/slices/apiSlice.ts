@@ -19,7 +19,7 @@ export interface Chat {
     _id: string,
     name?: string,
     user?: any,
-    type: string,
+    chatType: string,
     avatar?: string,
     unreadCount?: number,
     messages?: IMessage[],
@@ -85,6 +85,13 @@ export interface IUpdateProfileRequest {
     name?: string,
     avatar?: string,
     email?: string,
+}
+
+export interface IAddParticipantRequest {
+    chatId: string,
+    data: {
+        participants: String[]
+    }
 }
 
 export const apiSlice = createApi({
@@ -175,6 +182,15 @@ export const apiSlice = createApi({
                     body
                 }),
                 transformResponse: (response: { data: IUser }, meta, arg) => response.data
+            }),
+
+            addChatParticipant: builder.mutation<Chat, IAddParticipantRequest>({
+                query: ({ chatId, data }) => ({
+                    url: `/chats/${chatId}/participants`,
+                    method: 'POST',
+                    body: data
+                }),
+                transformResponse: (response: { data: Chat }, meta, arg) => response.data
             })
         }
     }
@@ -191,5 +207,6 @@ export const {
     useCreateChatMutation,
     useRegisterMutation,
     useChangeUserStatusMutation,
-    useUpdateUserProfileMutation
+    useUpdateUserProfileMutation,
+    useAddChatParticipantMutation,
 } = apiSlice;

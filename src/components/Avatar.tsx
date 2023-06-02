@@ -10,10 +10,11 @@ import statusDnd from '../assets/images/icons/presence_dnd.png';
 interface IAvatarProps {
     status?: string
     src?: string,
-    alt?: string
+    alt?: string,
+    hideStatus?: boolean
 }
 
-const Avatar = ({ status, src, alt }: IAvatarProps) => {
+const Avatar = ({ status, src, alt, hideStatus=false }: IAvatarProps) => {
     let statusBadge = statusUnknown;
 
     switch(status) {
@@ -50,12 +51,14 @@ const Avatar = ({ status, src, alt }: IAvatarProps) => {
                     currentTarget.src = emptyUserAvatar;
                 }}
             />
-            <span className="absolute right-2 bottom-0 z-40 border-2 border-white rounded-full bg-white">
-                <img 
-                    src={statusBadge}
-                    className="w-2.5 h-2.5 rounded-full"
-                />
-            </span>
+            { !hideStatus ? 
+                <span className="absolute right-2 bottom-0 z-40 border-2 border-white rounded-full bg-white">
+                    <img 
+                        src={statusBadge}
+                        className="w-2.5 h-2.5 rounded-full"
+                    />
+                </span> : null
+            }
         </div>
     )
 }
