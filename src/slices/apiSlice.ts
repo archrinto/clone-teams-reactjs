@@ -94,6 +94,14 @@ export interface IAddParticipantRequest {
     }
 }
 
+export interface IUpdateChatRequest {
+    chatId: string,
+    data: {
+        name?: String,
+        avatar?: String
+    }
+}
+
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({
@@ -191,7 +199,16 @@ export const apiSlice = createApi({
                     body: data
                 }),
                 transformResponse: (response: { data: Chat }, meta, arg) => response.data
-            })
+            }),
+
+            updateChat: builder.mutation<Chat, IUpdateChatRequest>({
+                query: ({ chatId, data}) => ({
+                    url: `/chats/${chatId}`,
+                    method: 'PUT',
+                    body: data
+                }),
+                transformResponse: (response: { data: Chat }, meta, arg) => response.data
+            }),
         }
     }
 })
@@ -209,4 +226,5 @@ export const {
     useChangeUserStatusMutation,
     useUpdateUserProfileMutation,
     useAddChatParticipantMutation,
+    useUpdateChatMutation,
 } = apiSlice;

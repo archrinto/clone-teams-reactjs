@@ -12,6 +12,7 @@ import Avatar from "./Avatar";
 import useOnOutsideClick from "../hooks/useOnOutsideClick";
 import ChatMessageContextMenu from "./ChatMessageContextMenu";
 import ChatMessageParticipantMenu from "./ChatMessageParticipantMenu";
+import GroupChatHeader from "./GroupChatHeader";
 
 export interface Message {
     type?: string,
@@ -158,19 +159,9 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
                     <UserChatHeader 
                         user={userMap[activeChat?.participants?.[0]._id]}
                     /> :
-                    <div className="flex gap-4">
-                        <img 
-                            src={activeChat?.avatar || emptyUserAvatar} 
-                            className="w-6 h-6 rounded-full bg-gray-200"
-                            onError={({ currentTarget }) => {
-                                currentTarget.onerror = null; // prevents looping
-                                currentTarget.src = emptyUserAvatar;
-                            }}
-                        />
-                        <div>
-                            <span className="font-bold text-gray-800">{ activeChat?.name || 'User' }</span>
-                        </div>
-                    </div>
+                    <GroupChatHeader 
+                        chat={activeChat}
+                    />
                 }
                 <div className="flex gap-4 items-center">
                     <div>
