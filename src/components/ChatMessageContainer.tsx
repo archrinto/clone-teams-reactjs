@@ -7,12 +7,13 @@ import ChatMessagePrompt from "./ChatMessagePrompt";
 import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
 import { selectUserMap } from "../slices/userSlice";
 import ChatMessageItem from "./ChatMessageItem";
-import { ArrowUpOnSquareStackIcon,  ArrowUturnLeftIcon,  EyeSlashIcon,  TagIcon,  TrashIcon,  UserPlusIcon } from "@heroicons/react/24/outline";
+import { ArrowUpOnSquareStackIcon,  ArrowUturnLeftIcon,  EyeSlashIcon,  PhoneIcon,  TagIcon,  TrashIcon,  UserPlusIcon } from "@heroicons/react/24/outline";
 import Avatar from "./Avatar";
 import useOnOutsideClick from "../hooks/useOnOutsideClick";
 import ChatMessageContextMenu from "./ChatMessageContextMenu";
 import ChatMessageParticipantMenu from "./ChatMessageParticipantMenu";
 import GroupChatHeader from "./GroupChatHeader";
+import { Link } from "react-router-dom";
 
 export interface Message {
     type?: string,
@@ -164,6 +165,11 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
                     />
                 }
                 <div className="flex gap-4 items-center">
+                    <div>
+                        <Link className="border p-1 rounded-md block shadow-sm border-gray-300" to={`meeting/${activeChat?._id}`}>
+                            <PhoneIcon className="h-4 w-4" />
+                        </Link>
+                    </div>
                     <div>
                         <ChatMessageParticipantMenu
                             chat={activeChat}

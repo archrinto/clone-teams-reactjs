@@ -3,7 +3,7 @@ import Sidebar from './components/Sidebar';
 import ChatContainer from './components/ChatContainer';
 import { useAppDispatch, useAppSelector } from './hooks/hooks';
 import LoginContainer from './components/LoginContainer';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { PrivateOutlet } from './utils/PrivateOutlet';
 import { useEffect } from 'react';
 import { socket } from './socket';
@@ -13,11 +13,13 @@ import { IUser } from './slices/apiSlice';
 import Header from './components/Header';
 import { addUserMap, changeUserStatus, setUserMap } from './slices/userSlice';
 import RegisterContainer from './components/RegisterContainer';
+import MeetingContainer from './components/meetings/MeetingContainer';
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const getCurrentUserId = () => {
         return currentUser?._id;
@@ -58,12 +60,14 @@ function App() {
         socket.connect();
     }
 
-    const checkLoggedinUser = () => {
+    const checkLoggedinUser = async () => {
         const userStr = localStorage.getItem('user') || '';
         const user = userStr ? JSON.parse(userStr) : null;
         const token = localStorage.getItem('token') as string;
 
-        if (!token || !user) return;
+        if (!token || !user) return navigate('/login');
+
+        console.log('user loggedin');
 
         dispatch(setCredentials({
             token,
@@ -76,12 +80,11 @@ function App() {
             token: token
         };
 
-        navigate('/');
+        navigate(location.pathname);
     }
 
     useEffect(() => {    
         checkLoggedinUser();
-        
     }, []);
 
     useEffect(() => {
@@ -102,7 +105,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginContainer />} />
           <Route path="/register" element={<RegisterContainer />} />
-          <Route path="*" element={<PrivateOutlet />}>
+          <Route path="/*" element={<PrivateOutlet />}>
             <Route index element={
               <div className="h-screen flex flex-col">
                 <Header />
@@ -117,6 +120,7 @@ function App() {
                 </div>
             </div>
             } />
+            <Route path="meeting/:roomId" element={<MeetingContainer />} />
           </Route>
         </Routes>    
     </div>

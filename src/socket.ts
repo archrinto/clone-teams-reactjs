@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
+import config from "./config";
 
-const socketio_url = 'http://localhost:3000';
+const socketio_url = config.SOCKET_IO_SERVER;
 
 export const socket = io(socketio_url, {
     autoConnect: false

@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { AuthState } from './authSlice';
 import { RootState } from '../hooks/store';
+import config from '../config';
 
 export interface IMessage {
     _id?: string | null,
@@ -102,10 +103,12 @@ export interface IUpdateChatRequest {
     }
 }
 
+console.log(config.MAIN_API);
+
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:3000/v1',
+        baseUrl: config.MAIN_API,
         prepareHeaders: (headers, { getState }) => {
             // By default, if we have a token in the store, let's use that for authenticated requests
             const token = (getState() as RootState).auth.token

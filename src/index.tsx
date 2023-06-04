@@ -7,6 +7,7 @@ import reportWebVitals from './reportWebVitals';
 import 'tailwindcss/tailwind.css';
 import { Provider } from 'react-redux';
 import { store } from './hooks/store';
+import dotenv from 'dotenv';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

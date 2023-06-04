@@ -14,10 +14,10 @@ const slice = createSlice({
     reducers: {
         setCredentials: (
             state,
-            { payload: { user, token } }: PayloadAction<{ user: IUser | null; token: string }>
+            action: PayloadAction<{ user: IUser | null; token: string }>
         ) => {
-            state.user = user
-            state.token = token
+            state.user = action.payload.user
+            state.token = action.payload.token
         },
         updateCurrentUserStatus(state, action: PayloadAction<string>) {
             if (state.user) {
