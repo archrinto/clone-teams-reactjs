@@ -41,7 +41,7 @@ const Header = () => {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
 
-        dispatch(setCredentials({ user: null, token: ''}));
+        // dispatch(setCredentials({ user: null, token: ''}));
         window.location.href = '/login'
     }
 

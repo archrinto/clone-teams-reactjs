@@ -1,27 +1,54 @@
-import { createRef, useEffect } from "react"
+import { createRef, useEffect, useRef, useState } from "react"
 import { IUser } from "../../slices/apiSlice"
+import SimplePeer from "simple-peer"
 
 interface IMeetingParticipantsProps {
     participants?: any[]
 }
 
 interface IVideoProps {
-    user: IUser
-    stream: any
+    peerId: IUser
+    peer: SimplePeer.Instance
 }
 
-const Video = ({ stream }: IVideoProps) => {
-    const localVideo = createRef<HTMLVideoElement>();
+const Video = ({ peer }: IVideoProps) => {
+    let peerTimeout: any = null;
+    const [isVideoSteam, setIsVideoSteam] = useState(false);
+    const ref = useRef<HTMLVideoElement>(null);
 
     useEffect(() => {
-        if (localVideo.current) localVideo.current.srcObject = stream;
-    }, [stream, localVideo]);
+        peerTimeout = setTimeout(() => {
+            peer.on('track', handlePeerTrack)
+            peer.on("stream", handlePeerStream);
+        }, 100);
+
+        return () => {
+            if (peerTimeout) clearTimeout(peerTimeout);
+            peer.removeListener('track', handlePeerTrack);
+            peer.removeListener('stream', handlePeerStream);
+        }
+    }, []);
+
+    const handlePeerTrack =  (track: any, stream: any) => {
+        track.addEventListener('mute', () => {
+            setIsVideoSteam(false);
+            console.log('--- user stop the stream');
+        })
+    };
+
+    const handlePeerStream = (stream: any) => {
+        console.log('-- receive stream', ref);
+        setIsVideoSteam(true);
+
+        if (!ref.current) return;
+        ref.current.srcObject = stream;
+    }
 
     return (
         <div className="w-52 aspect-square bg-indigo-400">
             <video 
-                className="w-full aspect-square object-cover"
-                ref={localVideo}
+                className={'w-full aspect-square object-cover ' + (isVideoSteam ? 'block' : 'hidden') }
+                ref={ref}
                 autoPlay
             />
         </div>
@@ -35,8 +62,8 @@ const MeetingParticipants = ({ participants }: IMeetingParticipantsProps) => {
                 {participants?.map((item, i) => 
                     <Video 
                         key={i}
-                        user={item.user}
-                        stream={item.stream} 
+                        peerId={item.peerId}
+                        peer={item.peer} 
                     />
                 )}
             </div>

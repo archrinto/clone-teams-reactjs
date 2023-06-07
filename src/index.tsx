@@ -9,6 +9,12 @@ import { Provider } from 'react-redux';
 import { store } from './hooks/store';
 import dotenv from 'dotenv';
 
+import * as process from 'process';
+
+(window as any).global = window;
+(window as any).process = process;
+(window as any).Buffer = [];
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
