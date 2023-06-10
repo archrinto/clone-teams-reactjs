@@ -39,8 +39,6 @@ const MeetingContainer = () => {
     const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
     const [peers, setPeers] = useState<IUserPeer[]>([]);
     const peersRef = useRef<IUserPeer[]>([]);
-    const [micStatus, setMicStatus] = useState(true);
-    const [cameraStatus, setCameraStatus] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -76,6 +74,7 @@ const MeetingContainer = () => {
 
         return () => {
             if (mediaStreamTimeout) clearTimeout(mediaStreamTimeout);
+            handleStopMediaStream();
         }
     }, [mediaStream]);
 
@@ -205,6 +204,8 @@ const MeetingContainer = () => {
             });
         }
 
+        handleStopMediaStream();
+
         peersRef.current = [];
         setPeers([]);
 
@@ -212,6 +213,13 @@ const MeetingContainer = () => {
         socket.off('user-send-peer-signal');
         socket.off('user-leave-meeting');
         socket.off('user-join-meeting');
+    }
+
+    const handleStopMediaStream = () => {
+        if (!mediaStream) return;
+        
+        console.log('-- stop current mediaStream');
+        mediaStream.getTracks().forEach(track => track.stop());
     }
 
     const addPeer = async (peer: IUserPeer) => {
