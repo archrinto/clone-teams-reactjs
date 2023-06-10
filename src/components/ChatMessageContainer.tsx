@@ -2,12 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { IMessage, IMessageRequestParams, useLazyFetchChatMessagesQuery } from "../slices/apiSlice";
 import { selectCurrentUser } from "../slices/authSlice";
-import { addChatMessage, selectActiveChat, setChatMarkAsRead, setChatMessages } from "../slices/chatSlice";
+import { selectActiveChat, setChatMarkAsRead, setChatMessages } from "../slices/chatSlice";
 import ChatMessagePrompt from "./ChatMessagePrompt";
-import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
 import { selectUserMap } from "../slices/userSlice";
 import ChatMessageItem from "./ChatMessageItem";
-import { ArrowUpOnSquareStackIcon,  ArrowUturnLeftIcon,  EyeSlashIcon,  PhoneIcon,  TagIcon,  TrashIcon,  UserPlusIcon } from "@heroicons/react/24/outline";
+import { ArrowUpOnSquareStackIcon, PhoneIcon } from "@heroicons/react/24/outline";
 import Avatar from "./Avatar";
 import useOnOutsideClick from "../hooks/useOnOutsideClick";
 import ChatMessageContextMenu from "./ChatMessageContextMenu";
@@ -68,7 +67,6 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
     const [selectedMessage, setSelectedMessage] = useState<IMessage | null>(null)
     const [messageContextMenu, setMessageContextMenu] = useState<IContextMenuState>(initialContextMenuState);
     const messageContextMenuRef = useRef<HTMLDivElement>(null);
-    const [replyMessage, setReplyMessage] = useState<IMessage | null>(null);
 
     const loadChatMessage = async () => {
         if (activeChat?._id && activeChat) {
@@ -76,7 +74,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
                 chat_id: activeChat._id,
                 limit: 10,
                 before: ''
-            }, true);
+            });
             dispatch(setChatMessages({chatId: activeChat._id, messages: result.data || [] }))
             setTimeout(() => {
                 scrollToBottom()
@@ -152,6 +150,21 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
         loadChatMessage();
         console.log('loading message')
     }, [chatId])
+
+    if (!activeChat) {
+        return (
+            <div className="flex flex-col h-full absolute left-0 right-0 top-0 bottom-0 justify-center items-center">
+                <div className="text-center">
+                    <h3 className="text-gray-700 text-lg">
+                        Start new conversation
+                    </h3>
+                    <p className="text-gray-400">
+                        Select a user or create a group chat to start a conversation
+                    </p>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-col h-full absolute left-0 right-0 top-0 bottom-0">

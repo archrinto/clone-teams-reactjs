@@ -9,11 +9,12 @@ import { useEffect } from 'react';
 import { socket } from './socket';
 import { addChatMessage, addNewChat } from './slices/chatSlice';
 import { selectCurrentUser, setCredentials, updateCurrentUserStatus } from './slices/authSlice';
-import { IUser } from './slices/apiSlice';
 import Header from './components/Header';
 import { addUserMap, changeUserStatus, setUserMap } from './slices/userSlice';
 import RegisterContainer from './components/RegisterContainer';
 import MeetingContainer from './components/meetings/MeetingContainer';
+import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
@@ -122,7 +123,11 @@ function App() {
             } />
             <Route path="meeting/:roomId" element={<MeetingContainer />} />
           </Route>
-        </Routes>    
+        </Routes>   
+        <ToastContainer 
+            position="bottom-right"
+            theme="light"
+        /> 
     </div>
   );
 }

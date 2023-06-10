@@ -94,7 +94,6 @@ const chatSlice = createSlice({
             }
         },
         addChatMessage(state, action: PayloadAction<{chatId: string | null, message: IMessage, currentUserId?: string}>) {
-            console.log(action.payload.message.sender, action.payload.currentUserId)
             if (state.activeChat?._id === action.payload.chatId) {
                 if (!state.activeChat?.messages) {
                     state.activeChat.messages = [];

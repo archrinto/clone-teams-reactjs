@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useRegisterMutation } from '../slices/apiSlice';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const RegistrationForm: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -24,9 +25,11 @@ const RegistrationForm: React.FC = () => {
         register(formData)
             .unwrap()
             .then(data => {
+                toast.success('Register success');
                 return navigate('/login');
             })
             .catch(error => {
+                toast.error('Register failed');
                 console.log(error) 
             });
     };

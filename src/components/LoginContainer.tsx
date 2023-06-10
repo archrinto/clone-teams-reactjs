@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'
-import { useLoginMutation } from '../slices/apiSlice';
+import { ILoginResponse, useLoginMutation } from '../slices/apiSlice';
 import { useAppDispatch } from '../hooks/hooks';
 import { setCredentials } from '../slices/authSlice';
 import { socket } from '../socket';
+import { toast } from 'react-toastify';
 
 const LoginContainer: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -15,22 +16,28 @@ const LoginContainer: React.FC = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const user = await doLogin({ username, password }).unwrap();
-        if (user) {
-            dispatch(setCredentials(user));
-
-            // save login session
-            localStorage.setItem('token', user.token);
-            localStorage.setItem('user', JSON.stringify(user.user));
-
-            navigate('/');
-
-            socket.auth = {
-                token: user.token
-            };
-            socket.connect();
+        try {
+            const user = await doLogin({ username, password }).unwrap();
+            saveLoginSession(user);
+        } catch (error) {
+            toast.error('Login failed');
         }
     };
+
+    const saveLoginSession = (user: ILoginResponse) => {
+        dispatch(setCredentials(user));
+
+        // save login session
+        localStorage.setItem('token', user.token);
+        localStorage.setItem('user', JSON.stringify(user.user));
+
+        navigate('/');
+
+        socket.auth = {
+            token: user.token
+        };
+        socket.connect();
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
