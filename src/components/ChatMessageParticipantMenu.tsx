@@ -47,13 +47,13 @@ const ChatMessageParticipantMenu = ({ chat, currentUser }: IChatMessageParticipa
     const handleCancelAddPeople = () => {
         setIsAddParticipant(false);
     }
-    const handleAddParticipant = async (participants: String[]) => {
-        if (chat) {
+    const handleAddParticipant = async (participants: IUser[]) => {
+        if (chat && chat?._id) {
             try {
                 const data = await addParticipant({
                     chatId: chat?._id,
                     data: {
-                        participants
+                        participants: participants.map(item => item._id)
                     }
                 }).unwrap();
     

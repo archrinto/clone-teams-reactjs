@@ -12,7 +12,7 @@ import useOnOutsideClick from "../hooks/useOnOutsideClick";
 import ChatMessageContextMenu from "./ChatMessageContextMenu";
 import ChatMessageParticipantMenu from "./ChatMessageParticipantMenu";
 import GroupChatHeader from "./GroupChatHeader";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export interface Message {
     type?: string,
@@ -67,6 +67,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
     const [selectedMessage, setSelectedMessage] = useState<IMessage | null>(null)
     const [messageContextMenu, setMessageContextMenu] = useState<IContextMenuState>(initialContextMenuState);
     const messageContextMenuRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
 
     const loadChatMessage = async () => {
         if (activeChat?._id && activeChat) {
@@ -126,6 +127,10 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
         });
     }
 
+    const handleCall = () => {
+        navigate(`meeting/${activeChat?._id}`);
+    }
+
     const renderMessages = (messages: IMessage[]) => {
         let senderBefore = '';
         return messages?.map(message => {
@@ -179,9 +184,9 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
                 }
                 <div className="flex gap-4 items-center">
                     <div>
-                        <Link className="border p-1 rounded-md block shadow-sm border-gray-300" to={`meeting/${activeChat?._id}`}>
+                        <button className="border p-1 rounded-md block shadow-sm border-gray-300" onClick={handleCall}>
                             <PhoneIcon className="h-4 w-4" />
-                        </Link>
+                        </button>
                     </div>
                     <div>
                         <ChatMessageParticipantMenu

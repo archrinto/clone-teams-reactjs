@@ -7,6 +7,7 @@ import { IMessage, useCreateChatMutation, useSendChatMessageMutation } from "../
 import { selectCurrentUser } from "../slices/authSlice";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import ChatMessageItemReply from "./ChatMessageItemReply";
+import { useCreateChatFromDraft } from "../hooks/useCreateChatFromDraft";
 
 interface IMessagePromptProps {
     onMessageSent?: (message: IMessage) => void
@@ -23,6 +24,7 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
     const [sendMessage, { isLoading }] = useSendChatMessageMutation();
     const [createChat, { isLoading: isLoadingCreateChat }] = useCreateChatMutation();
     const replyMessage = useAppSelector(state => state.chat.replyMessage);
+    const createChatFromDraft = useCreateChatFromDraft();
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setValue(event.target.value);
@@ -37,16 +39,8 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
         // check if chat is exists or not
         let chatId = activeChat?._id || '';
         if (!chatId) {
-            const newChatData = {
-                name: null,
-                chatType: activeChat?.chatType || 'single',
-                participants: activeChat?.participants?.map(item => item._id) || [],
-            }
-            const newChat = await createChat(newChatData).unwrap();
-            
-            dispatch(addNewChat(newChat));
-            dispatch(setActiveChat(newChat));
-            dispatch(setDraftChat(null));
+            const newChat = await createChatFromDraft(activeChat);
+            if (!newChat) return;
 
             chatId = newChat._id;
         }

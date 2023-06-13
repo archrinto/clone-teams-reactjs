@@ -4,7 +4,7 @@ import { Chat, IUser, useAddChatParticipantMutation, useLazyFetchUsersQuery } fr
 import { XMarkIcon } from "@heroicons/react/24/outline";
 interface ChatMessageAddParticipantProps {
     onCancel: () => void
-    onSubmit: (participants: String[]) => void
+    onSubmit: (participants: IUser[]) => void
 }
 
 const ChatMessageAddParticipant = ({ onCancel, onSubmit }: ChatMessageAddParticipantProps) => {
@@ -39,7 +39,7 @@ const ChatMessageAddParticipant = ({ onCancel, onSubmit }: ChatMessageAddPartici
 
     const handleAddParticipant = async () => {
         if (onSubmit) {
-            onSubmit(participants.map(item => item._id));
+            onSubmit(participants);
         }
         setKeyword('');
         setParticipants([]);

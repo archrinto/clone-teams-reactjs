@@ -52,7 +52,7 @@ const Avatar = ({ status, src, alt, hideStatus=false }: IAvatarProps) => {
                 }}
             />
             { !hideStatus ? 
-                <span className="absolute right-2 bottom-0 z-40 border-2 border-white rounded-full bg-white">
+                <span className="absolute right-2 bottom-0 z-20 border-2 border-white rounded-full bg-white">
                     <img 
                         src={statusBadge}
                         className="w-2.5 h-2.5 rounded-full"

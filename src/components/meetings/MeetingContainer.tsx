@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { socket } from "../../socket";
 import MeetingHeader from "./MeetingHeader";
 import MeetingParticipants from "./MeetingParticipants";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import config from "../../config";
 import SimplePeer from "simple-peer";
 
@@ -50,6 +50,7 @@ const MeetingContainer = () => {
     const [peers, setPeers] = useState<IUserPeer[]>([]);
     const peersRef = useRef<IUserPeer[]>([]);
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams()
 
     useEffect(() => {
         // set timeout to pervent multiple initialize
@@ -299,6 +300,7 @@ const MeetingContainer = () => {
                 onLeave={handleOnLeave}
                 onToggleCamera={handleOnToggleCamera}
                 onToggleMic={handleOnToggleMic}
+                meetingName={searchParams.get('name') || ''}
             />
             <MeetingParticipants 
                 participants={peers}

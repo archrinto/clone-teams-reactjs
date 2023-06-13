@@ -7,16 +7,17 @@ interface IMeetingHeaderProps {
     onToggleMic?: () => void
     onToggleCamera?: () => void
     micStatus: boolean
-    cameraStatus: boolean
+    cameraStatus: boolean,
+    meetingName?: string
 }
 
 const MeetingHeader = ({ 
-    onLeave, onToggleCamera, onToggleMic, micStatus, cameraStatus
+    onLeave, onToggleCamera, onToggleMic, micStatus, cameraStatus, meetingName
 }: IMeetingHeaderProps) => {
     return (
         <div className="flex flex-col">
             <div className="text-center bg-zinc-900 text-white py-1 text-sm">
-                <span>Meeting Name</span>
+                <span>{ meetingName || 'Meeting Name' }</span>
             </div>
             <div className="flex bg-zinc-800 py-2 justify-between items-stretch">
                 <div className="flex-1 text-white flex items-center px-3">

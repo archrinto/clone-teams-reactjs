@@ -43,6 +43,7 @@ function App() {
     
         socket.on('new_chat', (chat) => {
             // add user to user map
+            console.log(chat);
             dispatch(setUserMap(chat.participants))
             dispatch(addNewChat(chat));
         })

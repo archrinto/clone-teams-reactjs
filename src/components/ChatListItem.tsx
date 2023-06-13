@@ -55,7 +55,7 @@ const ChatListItem = ({chat, user, isActive, onClick, currentUserId}: IChatListI
                     { currentUserId && lastMessage?.sender?._id === currentUserId ? 
                         'You: ' : (chat.chatType !== 'single' ? lastMessage?.sender?.name?.split(' ')?.[0] + ': ' : '')
                     }
-                    {lastMessage?.content || <i>No message</i>}
+                    {lastMessage?.content || (!chat._id ? <i>Draft</i> : <i>No message</i>) }
                 </p>
             </div>
         </li>

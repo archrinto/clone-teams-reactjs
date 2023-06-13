@@ -91,7 +91,7 @@ const Header = () => {
                         className="bg-gray-50 border border-gray-300 text-gray-900 rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full px-2 py-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     />
                     { isShowResult ? (
-                        <div className="z-40 absolute left-0 right-0 top-13">
+                        <div className="z-30 absolute left-0 right-0 top-13">
                             <div className="w-full bg-white border p-4 rounded-md drop-shadow-md flex flex-col gap-2">
                                 { users?.map((item) => 
                                     <button 
