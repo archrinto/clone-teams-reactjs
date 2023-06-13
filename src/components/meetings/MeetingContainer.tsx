@@ -5,6 +5,7 @@ import MeetingParticipants from "./MeetingParticipants";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import config from "../../config";
 import SimplePeer from "simple-peer";
+import { useAppDispatch } from "../../hooks/hooks";
 
 const CAPTURE_OPTIONS = {
     audio: false,
@@ -50,7 +51,8 @@ const MeetingContainer = () => {
     const [peers, setPeers] = useState<IUserPeer[]>([]);
     const peersRef = useRef<IUserPeer[]>([]);
     const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams()
+    const [searchParams, setSearchParams] = useSearchParams();
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         // set timeout to pervent multiple initialize
@@ -278,7 +280,7 @@ const MeetingContainer = () => {
     const handleOnLeave = () => {
         // emitLeaveRoom();
         // stopMediaStream();
-        navigate('/');
+        window.close();
     }
     
 

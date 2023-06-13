@@ -5,6 +5,7 @@ import { useAppDispatch } from '../hooks/hooks';
 import { setCredentials } from '../slices/authSlice';
 import { socket } from '../socket';
 import { toast } from 'react-toastify';
+import Spinner from './general/Spinner';
 
 const LoginContainer: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -69,9 +70,13 @@ const LoginContainer: React.FC = () => {
                         />
                     </div>
                     <button
+                        disabled={isLoading}
                         type="submit"
-                        className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-md focus:outline-none"
+                        className="w-full flex justify-center items-center py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus:outline-none"
                     >
+                        { isLoading ?
+                            <Spinner className="h-5 w-5 fill-indigo-100 text-indigo-500 mr-2" /> : null
+                        }
                         Login
                     </button>
                 </form>

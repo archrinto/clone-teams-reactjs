@@ -57,6 +57,7 @@ const UserChatHeader = ({ user }: any) => {
 }
 
 const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
+    const popupMeetingWindow = useRef<Window | null>(null);
     const currentUser = useAppSelector(selectCurrentUser);
     const activeChat = useAppSelector(selectActiveChat);
     const [getChatMessages, chatMessagesResult] = useLazyFetchChatMessagesQuery();
@@ -128,8 +129,18 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
     }
 
     const handleCall = () => {
-        navigate(`meeting/${activeChat?._id}`);
+        if (popupMeetingWindow.current && !popupMeetingWindow.current.closed) {
+            popupMeetingWindow.current.close();
+        }
+
+        const width = Math.floor(window.innerWidth * 0.8);
+        const height = Math.floor(window.innerHeight * 0.8);
+        const left = Math.floor((window.innerWidth - width) / 2);
+        const top = Math.floor((window.innerHeight - height) / 2);
+
+        popupMeetingWindow.current = window.open(`/meeting/${activeChat?._id}`, '_blank', `width=${width}, height=${height}, left=${left}, top=${top}`);
     }
+
 
     const renderMessages = (messages: IMessage[]) => {
         let senderBefore = '';

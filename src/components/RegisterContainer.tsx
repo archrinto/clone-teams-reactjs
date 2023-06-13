@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useRegisterMutation } from '../slices/apiSlice';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Spinner from './general/Spinner';
 
 const RegistrationForm: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -9,7 +10,7 @@ const RegistrationForm: React.FC = () => {
         email: '',
         password: '',
     });
-    const [register, { error, status, data: newUser }] = useRegisterMutation();
+    const [register, { error, status, data: newUser, isLoading }] = useRegisterMutation();
     const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,13 +96,24 @@ const RegistrationForm: React.FC = () => {
 
                         <div>
                             <button
+                                disabled={isLoading}
                                 type="submit"
                                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            >
+                            >   { isLoading ?
+                                    <Spinner className="h-5 w-5 fill-indigo-100 text-indigo-500 mr-2" /> : null
+                                }
                                 Register
                             </button>
                         </div>
                     </form>
+                    <div className="text-center mt-4">
+                        <Link
+                            to="/login"
+                            className="text-gray-600 hover:text-gray-800"
+                        >
+                            Already have an account? Login
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

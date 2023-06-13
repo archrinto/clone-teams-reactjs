@@ -7,7 +7,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { PrivateOutlet } from './utils/PrivateOutlet';
 import { useEffect } from 'react';
 import { socket } from './socket';
-import { addChatMessage, addNewChat } from './slices/chatSlice';
+import { addChatMessage, addNewChat, updateChat } from './slices/chatSlice';
 import { selectCurrentUser, setCredentials, updateCurrentUserStatus } from './slices/authSlice';
 import Header from './components/Header';
 import { addUserMap, changeUserStatus, setUserMap } from './slices/userSlice';
@@ -48,6 +48,16 @@ function App() {
             dispatch(addNewChat(chat));
         })
 
+        socket.on('chat_updated', (chat) => {
+            // add user to user map
+            console.log(chat);
+            dispatch(setUserMap(chat.participants))
+            dispatch(updateChat({
+                chatId: chat._id,
+                chat: chat
+            }));
+        })
+
         socket.on('profile_status_change', (user) => {
             dispatch(changeUserStatus({ 
                 userId: user._id,
@@ -85,8 +95,17 @@ function App() {
         navigate(location.pathname);
     }
 
+    const clearAllWindow = () => {
+    }
+
     useEffect(() => {    
         checkLoggedinUser();
+
+        window.addEventListener('beforeunload', clearAllWindow);
+
+        return () => {
+            window.removeEventListener('beforeunload', clearAllWindow);
+        }
     }, []);
 
     useEffect(() => {
@@ -99,6 +118,7 @@ function App() {
             socket.off('new_chat');
             socket.off('connect');
             socket.off('profile_status_change');
+            socket.off('chat_updated');
         }
     }, [currentUser])
 
