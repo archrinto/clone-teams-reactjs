@@ -39,7 +39,7 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
         if (!chatId) {
             const newChatData = {
                 name: null,
-                type: activeChat?.chatType || 'single',
+                chatType: activeChat?.chatType || 'single',
                 participants: activeChat?.participants?.map(item => item._id) || [],
             }
             const newChat = await createChat(newChatData).unwrap();
@@ -54,7 +54,7 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
         const messageData = {
             sender: { _id: currentUser?._id || '' },
             chat: chatId,
-            type,
+            messageType: type || 'text',
             content: value,
             replyTo: replyMessage
         };

@@ -7,7 +7,7 @@ export interface IMessage {
     _id?: string | null,
     chat?: string | null,
     sender?: IUser | null,
-    type?: string,
+    messageType?: string,
     content?: string,
     replyTo?: IMessage,
     is_pinned?: boolean,
@@ -31,7 +31,7 @@ export interface Chat {
 }
 
 export interface IChatRequest {
-    type: string,
+    chatType: string,
     name: string | null,
     participants: string[]
 }

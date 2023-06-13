@@ -16,6 +16,16 @@ const PEER_OPTIONS = {
     port: config.PEER_SERVER_PORT
 }
 
+const SIMPLE_PEER_CONFIG = {
+    iceServers: [
+        {
+            urls: config.TURN_SERVER || '',
+            username: config.TURN_SERVER_USER || '',
+            credential: config.TURN_SERVER_PASSWORD || ''
+        }
+    ]
+}
+
 interface IUserPeer {
     peerId: string,
     peer: SimplePeer.Instance
@@ -120,6 +130,9 @@ const MeetingContainer = () => {
         const peer = new SimplePeer({
             initiator: true,
             trickle: false,
+            config: {
+                ...SIMPLE_PEER_CONFIG
+            }
         });
 
         peer.on('signal', (signal) => {
@@ -153,6 +166,9 @@ const MeetingContainer = () => {
         const newPeer = new SimplePeer({
             initiator: false,
             trickle: false,
+            config: {
+                ...SIMPLE_PEER_CONFIG
+            }
         });
 
         newPeer.on('signal', (signal) => {
