@@ -2,6 +2,7 @@ import { IMessage, IUser } from "../slices/apiSlice";
 import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
 import Avatar from "./Avatar";
 import ChatMessageItemReply from "./ChatMessageItemReply";
+import { formatDateTime } from "../utils/DateHelper";
 
 interface IChatMessageItemProps {
     message: IMessage,
@@ -28,12 +29,17 @@ const ChatMessageItem = ({ message, sender, isMine, onContextMenu }: IChatMessag
                         handleContextMenu(event, message)
                     }}
                 >
-                    <div className="px-3 py-2 rounded-lg inline-block bg-indigo-100 text-left">
+                    <div className="px-3 py-1.5 rounded-lg inline-block bg-indigo-100 text-left">
+                        <div className="text-xs flex gap-4">
+                            <span className="text-gray-500">{ formatDateTime(message?.createdAt || '') }</span>
+                        </div>
                         { message?.replyTo ? 
-                            <ChatMessageItemReply 
-                                canCancel={false}
-                                message={message.replyTo}
-                            /> : null
+                            <div className="mt-1">
+                                <ChatMessageItemReply 
+                                    canCancel={false}
+                                    message={message.replyTo}
+                                /> 
+                            </div> : null
                         }
                         {message.content}
                     </div>
@@ -48,14 +54,20 @@ const ChatMessageItem = ({ message, sender, isMine, onContextMenu }: IChatMessag
                         handleContextMenu(event, message)
                     }}
                 >
-                    <div className="px-3 py-2 rounded-lg inline-block bg-white text-gray-600">
+                    <div className="px-3 py-1.5 rounded-lg inline-block bg-white text-gray-600">
+                        <div className=" text-xs flex gap-4">
+                            <span className="font-semibold">{ message?.sender?.name }</span>
+                            <span className="text-gray-400">{ formatDateTime(message?.createdAt || '') }</span>
+                        </div>
                         { message?.replyTo ? 
-                            <ChatMessageItemReply 
-                                canCancel={false}
-                                message={message.replyTo}
-                            /> : null
+                            <div className="mt-1">
+                                <ChatMessageItemReply 
+                                    canCancel={false}
+                                    message={message.replyTo}
+                                /> 
+                            </div> : null
                         }
-                        {message.content}
+                        <div>{message.content}</div>
                     </div>
                 </div>
                 <Avatar 

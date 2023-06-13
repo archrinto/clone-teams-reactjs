@@ -60,7 +60,7 @@ const ChatList: React.FC<ChatListProps> = ({ }) => {
                     <ChatListItem 
                         key={chat._id}
                         chat={chat} 
-                        user={chat.chatType == 'single' ? userMap[chat?.participants?.[0]._id] : null}
+                        user={chat.chatType == 'single' ? userMap[chat?.participants?.[0]?._id] : null}
                         isActive={activeChat?._id == chat._id} 
                         currentUserId={currentUser?._id}
                         onClick={handleClick}
