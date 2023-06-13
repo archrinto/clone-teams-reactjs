@@ -128,6 +128,8 @@ const MeetingContainer = () => {
     const handleUserJoinMeet = ({ userId }: any) => {
         console.log('--- joined:', userId);
 
+        console.log('--- create new main peer', userId)
+
         const peer = new SimplePeer({
             initiator: true,
             trickle: false,
@@ -139,7 +141,7 @@ const MeetingContainer = () => {
         peer.on('signal', (signal) => {
             console.log('--- emit send peer signal');
             socket.emit('send-peer-signal', { 
-                roomId: roomId,
+                targetId: userId,
                 signal: signal,
             });
         });
@@ -156,13 +158,16 @@ const MeetingContainer = () => {
     };
 
     const handleUserSendPeerSignal = ({ userId, signal }: any) => {
-        console.log('--- receive peer signal');
+        console.log('--- receive peer signal', userId);
 
         const peer = peersRef.current.find(item => item.peerId === userId);
         if (peer) {
+            console.log('--- apply signal to existing peer', userId);
             peer.peer.signal(signal);
             return;
         }
+
+        console.log('--- create new slave peer', userId)
 
         const newPeer = new SimplePeer({
             initiator: false,
@@ -173,8 +178,9 @@ const MeetingContainer = () => {
         });
 
         newPeer.on('signal', (signal) => {
+            console.log('--- send return signal to roomid')
             socket.emit('return-peer-signal', {
-                roomId: roomId,
+                targetId: userId,
                 signal: signal
             });
         });
@@ -194,10 +200,11 @@ const MeetingContainer = () => {
     }
 
     const handleUserReturnPeerSignal = ({ userId, signal }: any) => {
-        console.log('--- receive return peer signal');
+        console.log('--- receive return peer signal', userId);
 
         const peer = peersRef.current.find(item => item.peerId === userId);
         if (peer) {
+            console.log('--- apply signal to existing peer', userId);
             peer.peer.signal(signal);
         }
     }
@@ -243,7 +250,7 @@ const MeetingContainer = () => {
         peersRef.current.push(peer);
         setPeers(peers => [...peers, peer]);
 
-        console.log(peersRef.current)
+        console.log('--- add new peer ref', peer.peerId, peersRef.current)
     }
 
     const removePeer = (userId: string) => {
@@ -265,7 +272,7 @@ const MeetingContainer = () => {
         });
 
 
-        console.log('--- peers ref', peersRef.current);
+        console.log('--- peers ref', peersRef.current, peersRef.current.length);
     }
 
     const handleOnLeave = () => {
