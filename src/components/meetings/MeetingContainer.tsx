@@ -5,7 +5,10 @@ import MeetingParticipants from "./MeetingParticipants";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import config from "../../config";
 import SimplePeer from "simple-peer";
-import { useAppDispatch } from "../../hooks/hooks";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useGetChatQuery, useLazyGetChatQuery } from "../../slices/apiSlice";
+import { setActiveChat } from "../../slices/chatSlice";
+import { getChatName } from "../../utils/ChatHelper";
 
 const CAPTURE_OPTIONS = {
     audio: false,
@@ -29,7 +32,12 @@ const SIMPLE_PEER_CONFIG = {
 
 interface IUserPeer {
     peerId: string,
-    peer: SimplePeer.Instance
+    peer: SimplePeer.Instance,
+    mediaState?: IMediaState,
+    user?: {
+        name: string,
+        avatar: string | null
+    }
 }
 
 interface IMediaState {
@@ -48,10 +56,11 @@ const MeetingContainer = () => {
         audio: false 
     });
     const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
+    const currentChat = useAppSelector(state => state.chat.activeChat);
+    const [getChat, chatResult] = useLazyGetChatQuery();
     const [peers, setPeers] = useState<IUserPeer[]>([]);
     const peersRef = useRef<IUserPeer[]>([]);
     const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -65,6 +74,12 @@ const MeetingContainer = () => {
             window.removeEventListener('beforeunload', cleanup);
         }
     }, []);
+
+    useEffect(() => {
+        if (chatResult && chatResult.data) {
+            dispatch(setActiveChat(chatResult.data));
+        }
+    }, [chatResult])
 
     useEffect(() => {
         mediaStreamTimeout = setTimeout(() => {
@@ -95,6 +110,11 @@ const MeetingContainer = () => {
         mediaStateTimeout = setTimeout(() => {
             console.log('-- update mediaState');
 
+            socket.emit('media-state-change', {
+                roomId: roomId,
+                mediaState: mediaState
+            });
+
             if (mediaStream) {
                 console.log('-- stop current mediaStream');
                 mediaStream.getTracks().forEach(track => track.stop());
@@ -115,6 +135,10 @@ const MeetingContainer = () => {
     }, [mediaState]);
 
     const initialize = () => {
+        if (!roomId) return;
+
+        getChat(roomId);
+
         console.log('--- joining a meeting');
 
         socket.emit('join-meeting', {
@@ -124,10 +148,11 @@ const MeetingContainer = () => {
         socket.on('user-join-meeting', handleUserJoinMeet);
         socket.on('user-send-peer-signal', handleUserSendPeerSignal);
         socket.on('user-return-peer-signal', handleUserReturnPeerSignal);
-        socket.on('user-leave-meeting', handleUserLeaveMeeting)
+        socket.on('user-leave-meeting', handleUserLeaveMeeting);
+        socket.on('user-media-state-change', handleUserMediaStateChange);
     };
 
-    const handleUserJoinMeet = ({ userId }: any) => {
+    const handleUserJoinMeet = ({ userId, user }: any) => {
         console.log('--- joined:', userId);
 
         console.log('--- create new main peer', userId)
@@ -156,10 +181,10 @@ const MeetingContainer = () => {
             console.error('Peer Error:', error)
         });
 
-        addPeer({ peerId: userId, peer: peer });
+        addPeer({ peerId: userId, peer: peer, user });
     };
 
-    const handleUserSendPeerSignal = ({ userId, signal }: any) => {
+    const handleUserSendPeerSignal = ({ userId, user, signal }: any) => {
         console.log('--- receive peer signal', userId);
 
         const peer = peersRef.current.find(item => item.peerId === userId);
@@ -198,7 +223,7 @@ const MeetingContainer = () => {
         // trigger incoming signal
         newPeer.signal(signal);
 
-        addPeer({ peerId: userId, peer: newPeer });
+        addPeer({ peerId: userId, peer: newPeer, user });
     }
 
     const handleUserReturnPeerSignal = ({ userId, signal }: any) => {
@@ -215,6 +240,16 @@ const MeetingContainer = () => {
         console.log('--- user leave meeting', userId);
 
         removePeer(userId);
+    }
+
+    const handleUserMediaStateChange = ({ userId, mediaState: userMediaState }: any) => {
+        console.log('--- user media state change', userId, mediaState);
+        setPeers(peers => {
+            const index = peers.findIndex(item => item.peerId === userId);
+            if (index === -1) return peers;
+            peers[index].mediaState = userMediaState;
+            return [...peers];
+        });
     }
 
     const cleanup = () => {
@@ -309,7 +344,7 @@ const MeetingContainer = () => {
                 onLeave={handleOnLeave}
                 onToggleCamera={handleOnToggleCamera}
                 onToggleMic={handleOnToggleMic}
-                meetingName={searchParams.get('name') || ''}
+                meetingName={currentChat ? getChatName(currentChat) : 'Unknown'}
             />
             <MeetingParticipants 
                 participants={peers}

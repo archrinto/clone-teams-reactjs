@@ -42,7 +42,7 @@ const MeetingHeader = ({
                     >
                         { micStatus ? 
                             <MicrophoneIcon className="h-5 w-5" /> :
-                            <MicrophoneSlashIcon />
+                            <MicrophoneSlashIcon className="h-5 w-5" />
                         }
                     </button>
                     <button

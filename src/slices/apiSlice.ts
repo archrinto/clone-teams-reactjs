@@ -212,6 +212,13 @@ export const apiSlice = createApi({
                 }),
                 transformResponse: (response: { data: Chat }, meta, arg) => response.data
             }),
+
+            getChat: builder.query<Chat, string>({
+                query: (chatId) => {
+                    return `/chats/${chatId}`
+                },
+                transformResponse: (response: { data: Chat }, meta, arg) => response.data
+            })
         }
     }
 })
@@ -230,4 +237,6 @@ export const {
     useUpdateUserProfileMutation,
     useAddChatParticipantMutation,
     useUpdateChatMutation,
+    useGetChatQuery,
+    useLazyGetChatQuery
 } = apiSlice;

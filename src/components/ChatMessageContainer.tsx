@@ -133,7 +133,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
             popupMeetingWindow.current.close();
         }
 
-        const width = Math.floor(window.innerWidth * 0.8);
+        const width = Math.floor(window.innerWidth * 0.7);
         const height = Math.floor(window.innerHeight * 0.8);
         const left = Math.floor((window.innerWidth - width) / 2);
         const top = Math.floor((window.innerHeight - height) / 2);
