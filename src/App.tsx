@@ -15,12 +15,17 @@ import RegisterContainer from './components/RegisterContainer';
 import MeetingContainer from './components/meetings/MeetingContainer';
 import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import useNotification from './hooks/useNotification';
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const location = useLocation();
+    const {
+        createMessageNotificaion,
+        closeAllNotification
+    } = useNotification();
 
     const getCurrentUserId = () => {
         return currentUser?._id;
@@ -38,6 +43,11 @@ function App() {
                 message, 
                 currentUserId: getCurrentUserId()
             }
+
+            if (message?.sender?._id !== getCurrentUserId()) {
+                createMessageNotificaion(message);
+            }
+
             dispatch(addChatMessage(messageData));
         })
     
@@ -95,16 +105,11 @@ function App() {
         navigate(location.pathname);
     }
 
-    const clearAllWindow = () => {
-    }
-
     useEffect(() => {    
         checkLoggedinUser();
 
-        window.addEventListener('beforeunload', clearAllWindow);
-
         return () => {
-            window.removeEventListener('beforeunload', clearAllWindow);
+   
         }
     }, []);
 
@@ -146,7 +151,7 @@ function App() {
           </Route>
         </Routes>   
         <ToastContainer 
-            position="bottom-right"
+            position="top-right"
             theme="light"
         /> 
     </div>

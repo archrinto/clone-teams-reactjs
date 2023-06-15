@@ -6,6 +6,7 @@ import Avatar from "./Avatar";
 import ChatMessageAddParticipant from "./ChatMessageAddParticipant";
 import { useAppDispatch } from "../hooks/hooks";
 import { updateChat } from "../slices/chatSlice";
+import { toast } from "react-toastify";
 
 interface IChatMessageParticipantMenuProps {
     chat: Chat | null,
@@ -67,7 +68,8 @@ const ChatMessageParticipantMenu = ({ chat, currentUser }: IChatMessageParticipa
                     }
                 }))
             } catch(error) {
-                console.log('Add participant failed');
+                console.log(error);
+                toast.error('Add participant failed.')
             }
         }
         setIsAddParticipant(false);

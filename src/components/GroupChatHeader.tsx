@@ -4,13 +4,16 @@ import { PencilIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useAppDispatch } from "../hooks/hooks";
 import { updateChat } from "../slices/chatSlice";
+import { getChatName } from "../utils/ChatHelper";
+import { toast } from "react-toastify";
 
 interface IGroupChatHeaderProps {
     chat: Chat | null,
 }
 
 const GroupChatHeader = ({ chat }: IGroupChatHeaderProps) => {
-    const [groupName, setGroupName] = useState(chat?.name || '');
+    const defaultChatName = chat ? getChatName(chat) : '';
+    const [groupName, setGroupName] = useState(defaultChatName);
     const [isChangeName, setIsChangeName] = useState(false);
     const [updateChatMutation, results] = useUpdateChatMutation();
     const dispatch = useAppDispatch()
@@ -21,33 +24,30 @@ const GroupChatHeader = ({ chat }: IGroupChatHeaderProps) => {
     }
 
     const handleSave = async () => {
-        if (chat) {
-            try {
-                const updatedChat = await updateChatMutation({
-                    chatId: chat._id,
-                    data: {
-                        name: groupName
-                    }
-                }).unwrap();
+        if (!chat) return setIsChangeName(false);
 
-                dispatch(updateChat({
-                    chatId: chat._id,
-                    chat: {
-                        _id: chat._id,
-                        chatType: chat.chatType,
-                        name: updatedChat.name
-                    }
-                }))
-            } catch (error) {
-                console.log('Update chat failed');
-            }
+        try {
+            const updatedChat = await updateChatMutation({
+                chatId: chat._id,
+                data: {
+                    name: groupName
+                }
+            }).unwrap();
+
+            dispatch(updateChat({
+                chatId: chat._id,
+                chat: {
+                    _id: chat._id,
+                    chatType: chat.chatType,
+                    name: updatedChat.name
+                }
+            }));
+            toast.success('Group name changed.');
+        } catch (error) {
+            toast.error('Change group name failed.');
         }
-        setIsChangeName(false);
-    }
 
-    let defaultChatName = '';
-    if (chat?.chatType !== 'single' && !chat?.name) {
-        defaultChatName = chat?.participants?.map(item => item.name?.split(' ')?.[0] || '').join(', ') || '';
+        setIsChangeName(false);
     }
 
     return (
@@ -61,7 +61,7 @@ const GroupChatHeader = ({ chat }: IGroupChatHeaderProps) => {
                 }}
             />
             <div>
-                <span className="font-bold text-gray-800">{chat?.name || defaultChatName}</span>
+                <span className="font-bold text-gray-800">{defaultChatName}</span>
             </div>
             <div className="flex items-center">
                 <button

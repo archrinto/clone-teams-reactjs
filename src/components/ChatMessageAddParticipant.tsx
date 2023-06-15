@@ -104,7 +104,7 @@ const ChatMessageAddParticipant = ({ onCancel, onSubmit }: ChatMessageAddPartici
                                     </div>
                                 </button>) :
                                 <div className="text-gray-700 text-center">
-                                    Can't find any matches
+                                    { isLoading ? 'Loading...' : 'Can\'t find any matches' }
                                 </div>
                             }
                         </div> : null

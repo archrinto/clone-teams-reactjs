@@ -5,7 +5,9 @@ import config from '../config';
 
 export interface IMessage {
     _id?: string | null,
-    chat?: string | null,
+    chat?: {
+        _id: string | null
+    },
     sender?: IUser | null,
     messageType?: string,
     content?: string,
