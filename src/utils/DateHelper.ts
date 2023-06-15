@@ -1,57 +1,55 @@
-const formatDateTimeShort = (utcDateString: string, locale: string = 'en-US') => {
-    const utcDate = new Date(utcDateString);
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    const sameYear = utcDate.getFullYear() === currentDate.getFullYear();
-    if (!sameYear) {
-        return utcDate.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: '2-digit' })
-    }
-
-    if (utcDate.getDate() == currentDate.getDate() && utcDate.getMonth() == currentDate.getMonth()) {
-        return utcDate.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit'});
-    }
-
-    return utcDate.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' })
+export const getDaysDifference = (a: Date, b: Date = new Date()) => {
+    const o = new Date(a.getTime());
+    const c = new Date(b.getTime());
+    o.setHours(0, 0, 0, 0);
+    c.setHours(0, 0, 0, 0);
+    return (c.getTime() - o.getTime()) / (1000 * 60 * 60 * 24);
 }
 
-const formatDateTime = (utcDateString: string, locale: string = 'en-US') => {
-    const utcDate = new Date(utcDateString);
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
+export const formatDateTimeShort = (isoDateString: string, locale: string = 'en-US') => {
+    const a = new Date(isoDateString);
+    const c = new Date();
+    const diff = getDaysDifference(a, c);
 
-    const sameYear = utcDate.getFullYear() === currentDate.getFullYear();
-    if (!sameYear) {
-        return utcDate.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: '2-digit' })
+    if (diff < 1) {
+        return a.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit'});
     }
 
-    if (utcDate.getDate() == currentDate.getDate() && utcDate.getMonth() == currentDate.getMonth()) {
-        return utcDate.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit'});
+    if ((a.getFullYear() === c.getFullYear())) {
+        return a.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' })
     }
 
-    // is less than 7 days
-    const daysDiff = (currentDate.getTime() - utcDate.getTime()) / (24 * 60 * 60 * 1000)
-    if (daysDiff < 7 ) {
-        if (daysDiff < 2) {
-            return (
-                'Yesterday ' + utcDate.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit'})
-            )
-        }
+    return a.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: '2-digit' });
+}
+
+export const formatDateTime = (isoDateString: string, locale: string = 'en-US') => {
+    const a = new Date(isoDateString);
+    const c = new Date();
+    const diff = getDaysDifference(a, c)
+
+    if (diff < 1) {
+        return a.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit'});
+    }
+
+    if (diff === 1) {
+        return ('Yesterday ' + a.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit'}))
+    }
+
+    if (diff < 7) {
         return (
-            utcDate.toLocaleDateString(locale, { weekday: 'long' }) 
+            a.toLocaleDateString(locale, { weekday: 'long' }) 
             + ' ' +
-            utcDate.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit'})
+            a.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit'})
         )
     }
 
-    return (
-        utcDate.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' }) 
-        + ' ' +
-        utcDate.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit'})
-    )
-}
+    if (a.getFullYear() === c.getFullYear()) {
+        return (
+            a.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' }) 
+            + ' ' +
+            a.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit'})
+        )
+    }
 
-export {
-    formatDateTime,
-    formatDateTimeShort
+    return a.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: '2-digit' })
 }

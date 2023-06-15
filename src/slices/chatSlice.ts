@@ -101,7 +101,7 @@ const chatSlice = createSlice({
                 if (action.payload.message.sender?._id !== action.payload.currentUserId) {
                     state.activeChat.unreadCount = (state.activeChat?.unreadCount || 0) + 1;
                 }
-                state.activeChat.messages.push(action.payload.message)
+                state.activeChat.messages = [action.payload.message, ...state.activeChat.messages]
             }
 
             const index = state.list.findIndex(item => item._id === action.payload.chatId);
@@ -112,7 +112,9 @@ const chatSlice = createSlice({
                 if (action.payload.message.sender?._id !== action.payload.currentUserId) {
                     state.list[index].unreadCount = (state.list[index]?.unreadCount || 0) + 1;
                 }
-                state.list[index]?.messages?.push(action.payload.message);
+                if (state.list?.[index]?.messages) {
+                    state.list[index].messages = [action.payload.message, ...(state.list?.[index]?.messages || [])];
+                }
             }
         },
         setReplyMessage(state, action: PayloadAction<IMessage | null>) {

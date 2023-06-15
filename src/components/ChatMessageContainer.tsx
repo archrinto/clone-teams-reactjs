@@ -217,7 +217,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
                 onClick={handleMessagesAreaClicked}
                 className="h-full overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch px-6 py-4"
             >
-                <div className="space-y-2">
+                <div className="space-y-2 space-y-reverse flex flex-col-reverse">
                     { renderMessages(activeChat?.messages || []) }
                 </div>
 

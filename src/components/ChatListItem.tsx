@@ -15,12 +15,12 @@ const ChatListItem = ({chat, user, isActive, onClick, currentUserId}: IChatListI
         onClick(chat);
     };
 
-    const lastMessage = chat?.messages?.[chat?.messages?.length - 1] || null;
+    const lastMessage = chat?.messages?.[0] || null;
 
     const getChatDatetime = (chat: Chat) => {
         let strDate = chat?.createdAt || '';
         if (chat?.messages && chat.messages.length > 0) {
-            strDate = chat.messages?.[chat?.messages?.length - 1].createdAt || '';
+            strDate = chat.messages?.[0].createdAt || '';
         }
 
         return strDate ? formatDateTimeShort(strDate) : '';
