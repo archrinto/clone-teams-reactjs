@@ -24,7 +24,7 @@ function App() {
     const location = useLocation();
     const {
         createMessageNotificaion,
-        closeAllNotification
+        createMeetingStartNotification
     } = useNotification();
 
     const getCurrentUserId = () => {
@@ -79,6 +79,11 @@ function App() {
             }
         })
 
+        socket.on('meeting-start', (chat) => {
+            console.log('--- meeting call')
+            createMeetingStartNotification(chat);
+        })
+
         socket.connect();
     }
 
@@ -124,6 +129,7 @@ function App() {
             socket.off('connect');
             socket.off('profile_status_change');
             socket.off('chat_updated');
+            socket.off('meeting-start');
         }
     }, [currentUser])
 
