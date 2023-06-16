@@ -29,7 +29,8 @@ export interface Chat {
     participants?: any[],
     createdAt?: string,
     updatedAt?: string,
-    participantCount?: number
+    participantCount?: number,
+    replyMessage?: IMessage | null,
 }
 
 export interface IChatRequest {

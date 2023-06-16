@@ -3,28 +3,30 @@ import { useState, useRef, useEffect } from "react";
 import { Message } from "./ChatMessageContainer";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { addChatMessage, addNewChat, selectActiveChat, setActiveChat, setChatList, setChatMarkAsRead, setDraftChat, setReplyMessage } from "../slices/chatSlice";
-import { IMessage, useCreateChatMutation, useSendChatMessageMutation } from "../slices/apiSlice";
+import { Chat, IMessage, useCreateChatMutation, useSendChatMessageMutation } from "../slices/apiSlice";
 import { selectCurrentUser } from "../slices/authSlice";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import ChatMessageItemReply from "./ChatMessageItemReply";
 import { useCreateChatFromDraft } from "../hooks/useCreateChatFromDraft";
 
 interface IMessagePromptProps {
-    onMessageSent?: (message: IMessage) => void
+    onMessageSent?: (message: IMessage) => void,
+    activeChat: Chat | null;
 }
 
-const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
+const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent, activeChat }) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
     const [value, setValue] = useState<string>('');
     const [type, settype] = useState<string>('');
-    const activeChat = useAppSelector(selectActiveChat);
     const currentUser = useAppSelector(selectCurrentUser);
     const dispatch = useAppDispatch();
     const [sendMessage, { isLoading }] = useSendChatMessageMutation();
-    const [createChat, { isLoading: isLoadingCreateChat }] = useCreateChatMutation();
-    const replyMessage = useAppSelector(state => state.chat.replyMessage);
     const createChatFromDraft = useCreateChatFromDraft();
+
+    useEffect(() => {
+        textareaRef.current?.focus();
+    }, [activeChat])
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setValue(event.target.value);
@@ -50,7 +52,7 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
             chat: chatId,
             messageType: type || 'text',
             content: value,
-            replyTo: replyMessage
+            replyTo: activeChat?.replyMessage || null
         };
 
         setValue('');
@@ -59,13 +61,20 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
         setTimeout(async () => {
             const message = await sendMessage(messageData).unwrap();
             if (typeof onMessageSent != 'undefined') onMessageSent(message);
-            if (replyMessage) dispatch(setReplyMessage(null));
+            if (activeChat?.replyMessage) dispatch(setReplyMessage({
+                chatId: activeChat._id,
+                message: null
+            }));
             dispatch(setChatMarkAsRead())
         }, 100)
     }
 
     const handleCancelReply = () => {
-        dispatch(setReplyMessage(null));
+        if (!activeChat) return;
+        dispatch(setReplyMessage({
+            chatId: activeChat._id,
+            message: null
+        }));
     }
 
     const adjustTextAreaHeight = () => {
@@ -79,11 +88,11 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent }) => {
         <div>
             <form onSubmit={(event) => { event.preventDefault(); } } ref={formRef}>
                 <div className="">
-                    { replyMessage ? 
+                    { activeChat?.replyMessage ? 
                         <ChatMessageItemReply 
                             onCancel={handleCancelReply}
                             canCancel={true}
-                            message={replyMessage}
+                            message={activeChat.replyMessage}
                         /> : null
                     }
                     <textarea

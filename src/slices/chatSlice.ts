@@ -70,6 +70,8 @@ const chatSlice = createSlice({
         updateChat(state, action: PayloadAction<{chatId: string, chat:Chat}>) {
             const index = state.list.findIndex(item => item._id === action.payload.chatId);
             if (index !== -1) {
+                // prevent message override
+                delete action.payload.chat?.messages;
                 if (state.activeChat?._id === action.payload.chatId) {
                     state.activeChat = {
                         ...state.activeChat,
@@ -81,6 +83,8 @@ const chatSlice = createSlice({
                     ...state.list[index],
                     ...action.payload.chat
                 }
+            } else {
+                state.list = [action.payload.chat, ...state.list];
             }
         },
         setChatMessages(state, action: PayloadAction<{chatId: string, messages: IMessage[]}>) {
@@ -117,8 +121,15 @@ const chatSlice = createSlice({
                 }
             }
         },
-        setReplyMessage(state, action: PayloadAction<IMessage | null>) {
-            state.replyMessage = action.payload
+        setReplyMessage(state, action: PayloadAction<{ chatId?: string, message: IMessage | null}>) {
+            const chatId = action.payload.chatId;
+            if (state.activeChat && state.activeChat?._id === chatId) {
+                state.activeChat.replyMessage = action.payload.message;
+            }
+            const index = state.list.findIndex(item => item._id === chatId);
+            if (index !== -1) {
+                state.list[index].replyMessage = action.payload.message
+            }
         }
     }
 });

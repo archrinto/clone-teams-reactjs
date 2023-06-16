@@ -15,8 +15,12 @@ interface ChatMessageContextMenuProps {
 const ChatMessageContextMenu = forwardRef(({ pageX, pageY, message, isMine, onClickAction}: ChatMessageContextMenuProps, ref: any) => {
     const dispatch = useAppDispatch();
 
-    const handlerReply = () => {
-        dispatch(setReplyMessage(message));
+    const handleReply = () => {
+        if (!message?.chat) return;
+        dispatch(setReplyMessage({
+            chatId: message.chat._id || undefined,
+            message: message
+        }));
         onClickAction();
     }
 
@@ -33,7 +37,7 @@ const ChatMessageContextMenu = forwardRef(({ pageX, pageY, message, isMine, onCl
                     <li>
                         <button
                             className="w-full py-1.5 px-3 hover:text-indigo-600 flex items-center gap-3 hover:bg-gray-100 rounded-md"
-                            onClick={handlerReply}
+                            onClick={handleReply}
                         >
                             <ArrowUturnLeftIcon className="h-5 w-5" />
                             <span>Reply</span>

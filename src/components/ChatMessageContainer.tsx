@@ -235,6 +235,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
             <div className="mt-auto bottom-0 w-full px-10 py-4 border-t shrink-0">
                 <ChatMessagePrompt 
                     onMessageSent={handleMessageSent}
+                    activeChat={activeChat}
                 />
             </div>
         </div>

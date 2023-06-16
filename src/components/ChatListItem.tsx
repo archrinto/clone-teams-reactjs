@@ -47,7 +47,7 @@ const ChatListItem = ({chat, user, isActive, onClick, currentUserId}: IChatListI
             <div className={'flex-grow overflow-hidden ' + (chat?.unreadCount ? 'font-semibold text-gray-800' : 'text-gray-600')}>
                 <div className="flex gap-1 items-center justify-between">
                     <span className="truncate">{ user ? user?.name : (chat?.name || defaultChatName) }</span>
-                    <span className='text-sm'>
+                    <span className='text-sm whitespace-nowrap'>
                         { getChatDatetime(chat) }
                     </span>
                 </div>
