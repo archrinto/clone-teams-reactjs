@@ -8,6 +8,7 @@ import { selectCurrentUser } from "../slices/authSlice";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import ChatMessageItemReply from "./ChatMessageItemReply";
 import { useCreateChatFromDraft } from "../hooks/useCreateChatFromDraft";
+import { toast } from "react-toastify";
 
 interface IMessagePromptProps {
     onMessageSent?: (message: IMessage) => void,
@@ -54,18 +55,22 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent, activeCha
             content: value,
             replyTo: activeChat?.replyMessage || null
         };
-
-        setValue('');
-
         // set timeout to prevent duplicated message if chat not created before
         setTimeout(async () => {
-            const message = await sendMessage(messageData).unwrap();
-            if (typeof onMessageSent != 'undefined') onMessageSent(message);
-            if (activeChat?.replyMessage) dispatch(setReplyMessage({
-                chatId: activeChat._id,
-                message: null
-            }));
-            dispatch(setChatMarkAsRead())
+            try {
+                const message = await sendMessage(messageData).unwrap();
+                if (typeof onMessageSent != 'undefined') onMessageSent(message);
+                if (activeChat?.replyMessage) dispatch(setReplyMessage({
+                    chatId: activeChat._id,
+                    message: null
+                }));
+                setValue('');
+
+                dispatch(setChatMarkAsRead())
+            } catch (error) {
+                console.log(error);
+                toast.error('Send message failed');
+            }
         }, 100)
     }
 

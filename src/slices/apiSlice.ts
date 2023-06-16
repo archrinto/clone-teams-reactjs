@@ -1,7 +1,11 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { FetchBaseQueryError, createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react';
 import { AuthState } from './authSlice';
 import { RootState } from '../hooks/store';
 import config from '../config';
+import { error } from 'console';
+import { BaseQueryApi, BaseQueryArg, BaseQueryExtraOptions, BaseQueryFn } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
+import { type } from 'os';
+import { RetryOptions } from '@reduxjs/toolkit/dist/query/retry';
 
 export interface IMessage {
     _id?: string | null,
@@ -110,7 +114,9 @@ console.log(config.MAIN_API);
 
 export const apiSlice = createApi({
     reducerPath: 'api',
-    baseQuery: fetchBaseQuery({
+    refetchOnFocus: false, // skip for now, find how to implement it 
+    refetchOnReconnect: false, // skip for now, find how to implement it
+    baseQuery: retry(fetchBaseQuery({
         baseUrl: config.MAIN_API,
         prepareHeaders: (headers, { getState }) => {
             // By default, if we have a token in the store, let's use that for authenticated requests
@@ -120,6 +126,31 @@ export const apiSlice = createApi({
             }
             return headers
         },
+    }), { 
+        retryCondition: (
+            error: FetchBaseQueryError,
+            args: BaseQueryArg<BaseQueryFn>, 
+            extraArgs: {
+                attempt: number;
+                baseQueryApi: BaseQueryApi;
+                extraOptions: BaseQueryExtraOptions<BaseQueryFn> & RetryOptions;
+            }
+        ): boolean => {
+            const maxRetries = 3;
+            if (extraArgs.attempt > (extraArgs?.extraOptions?.maxRetries || maxRetries)) {
+                return false;
+            }
+            if (extraArgs?.extraOptions?.retryCondition && !extraArgs.extraOptions.retryCondition(error, args, extraArgs)) {
+                return false;
+            }
+            if (typeof(error.status) === "string" && !["FETCH_ERROR", "TIMEOUT_ERROR"].includes(error.status)) {
+                return false;
+            }
+            if (typeof(error.status) === 'number' && error.status <= 500) {
+                return false;
+            }
+            return true;
+        }
     }),
     endpoints(builder) {
         return {
@@ -127,14 +158,14 @@ export const apiSlice = createApi({
                 query(limit = 10) {
                     return `/chats?limit=${limit}`;
                 },
-                transformResponse: (response: { data: Chat[] }, meta, arg) => response.data
+                transformResponse: (response: { data: Chat[] }, meta, arg) => response.data,
             }),
             
             fetchChatMessages: builder.query<IMessage[], IMessageRequestParams>({
                 query({ chat_id, limit = 10, before }) {
                     return `/chats/${chat_id}/messages?limit=${limit}`
                 },
-                transformResponse: (response: { data: IMessage[] }, meta, arg) => response.data
+                transformResponse: (response: { data: IMessage[] }, meta, arg) => response.data,
             }),
 
             fetchUsers: builder.query<IUser[], IUserRequestParams>({
@@ -168,7 +199,10 @@ export const apiSlice = createApi({
                     method: 'POST',
                     body
                 }),
-                transformResponse: (response: { data: IMessage }, meta, arg) => response.data
+                extraOptions: {
+                    maxRetries: 3,
+                },
+                transformResponse: (response: { data: IMessage }, meta, arg) => response.data,
             }),
 
             createChat: builder.mutation<Chat, IChatRequest>({
