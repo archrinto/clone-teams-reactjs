@@ -55,8 +55,9 @@ export interface RegisterRequest {
 }
 
 export interface IMessageRequestParams {
-    chat_id: string,
+    chatId: string,
     limit?: number,
+    skip?: number,
     before?: string,
 }
 
@@ -162,8 +163,8 @@ export const apiSlice = createApi({
             }),
             
             fetchChatMessages: builder.query<IMessage[], IMessageRequestParams>({
-                query({ chat_id, limit = 10, before }) {
-                    return `/chats/${chat_id}/messages?limit=${limit}`
+                query({ chatId, skip = 0, limit = 10, before }) {
+                    return `/chats/${chatId}/messages?limit=${limit}&skip=${skip}`
                 },
                 transformResponse: (response: { data: IMessage[] }, meta, arg) => response.data,
             }),

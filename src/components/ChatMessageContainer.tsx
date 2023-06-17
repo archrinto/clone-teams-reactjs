@@ -13,6 +13,7 @@ import ChatMessageContextMenu from "./ChatMessageContextMenu";
 import ChatMessageParticipantMenu from "./ChatMessageParticipantMenu";
 import GroupChatHeader from "./GroupChatHeader";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export interface Message {
     type?: string,
@@ -57,6 +58,13 @@ const UserChatHeader = ({ user }: any) => {
 }
 
 const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
+    const refLoadMore = useRef({
+        chatId: '',
+        lastMessageDate: new Date().toISOString(),
+        isFetching: false,
+        hasMore: true,
+        lastScrollHeight: 0,
+    })
     const popupMeetingWindow = useRef<Window | null>(null);
     const currentUser = useAppSelector(selectCurrentUser);
     const activeChat = useAppSelector(selectActiveChat);
@@ -65,22 +73,50 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
     const userMap = useAppSelector(selectUserMap);
     const chatId = activeChat?._id || null;
     const messagesAreaRef = useRef<HTMLDivElement>(null);
+    const messageListRef = useRef<HTMLDivElement>(null);
     const [selectedMessage, setSelectedMessage] = useState<IMessage | null>(null)
     const [messageContextMenu, setMessageContextMenu] = useState<IContextMenuState>(initialContextMenuState);
     const messageContextMenuRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
 
     const loadChatMessage = async () => {
-        if (activeChat?._id && activeChat) {
-            const result = await getChatMessages({
-                chat_id: activeChat._id,
-                limit: 10,
-                before: ''
+        if (!activeChat) return;
+        try {
+            refLoadMore.current.isFetching = true;
+            refLoadMore.current.lastScrollHeight = messagesAreaRef?.current?.scrollHeight || 0;
+            getChatMessages({
+                chatId: activeChat._id,
+                limit: 5,
+                skip: activeChat.messages?.length || 0,
+                before: refLoadMore.current.lastMessageDate
+            }).then(result => {
+                dispatch(setChatMessages({
+                    chatId: activeChat._id,
+                    messages: [
+                        ...(activeChat.messages || []),
+                        ...(result.data || [])
+                    ]
+                }));
+                const lastMessage = result?.data?.[result.data?.length - 1] || null;
+                
+                if (lastMessage && lastMessage.createdAt) {
+                    refLoadMore.current.lastMessageDate = lastMessage.createdAt;
+                }
+                refLoadMore.current.isFetching = false;
+                refLoadMore.current.hasMore = Boolean(lastMessage);
+
+                setTimeout(() => {
+                    if (!messagesAreaRef.current) return;
+                    messagesAreaRef.current.scrollTop = messagesAreaRef.current.scrollHeight - refLoadMore.current.lastScrollHeight;
+                }, 50);
+            }).catch(err => {
+                console.error(err);
+                toast.error('Load messages failed.')
+                refLoadMore.current.isFetching = false;
             });
-            dispatch(setChatMessages({chatId: activeChat._id, messages: result.data || [] }))
-            setTimeout(() => {
-                scrollToBottom()
-            }, 50)
+        } catch (error) {
+            toast.error('Load messages failed.')
+            refLoadMore.current.isFetching = false;
         }
     }
 
@@ -141,6 +177,15 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
         popupMeetingWindow.current = window.open(`/meeting/${activeChat?._id}`, '_blank', `width=${width}, height=${height}, left=${left}, top=${top}`);
     }
 
+    const handleScroll = async (event: any) => {
+        if (!activeChat) return;
+        if (event.target.scrollTop === 0 && refLoadMore.current.hasMore) {
+            if (!refLoadMore.current.isFetching) {
+                loadChatMessage();
+            }
+        }
+    }
+
 
     const renderMessages = (messages: IMessage[]) => {
         let senderBefore = '';
@@ -163,9 +208,20 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
     useOnOutsideClick(messageContextMenuRef, closeMessageContextMenu);
 
     useEffect(() => {
-        loadChatMessage();
-        console.log('loading message')
-    }, [chatId])
+        if (messagesAreaRef.current && activeChat?._id) {
+            const sameChat = refLoadMore.current.chatId == activeChat._id;
+            if (!sameChat) {
+                refLoadMore.current.chatId = activeChat._id;
+                refLoadMore.current.hasMore = true;
+                scrollToBottom();
+            }
+            if (messagesAreaRef.current.clientHeight >= messagesAreaRef.current.scrollHeight && 
+                (refLoadMore.current.hasMore || !sameChat)
+            ) {
+                loadChatMessage();
+            }
+        }
+    }, [activeChat])
 
     if (!activeChat) {
         return (
@@ -215,9 +271,10 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
             <div 
                 ref={messagesAreaRef}
                 onClick={handleMessagesAreaClicked}
+                onScroll={handleScroll}
                 className="h-full overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch px-6 py-4"
             >
-                <div className="space-y-2 space-y-reverse flex flex-col-reverse">
+                <div ref={messageListRef} className="space-y-2 space-y-reverse flex flex-col-reverse">
                     { renderMessages(activeChat?.messages || []) }
                 </div>
 
