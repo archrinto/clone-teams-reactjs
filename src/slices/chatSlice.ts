@@ -119,6 +119,8 @@ const chatSlice = createSlice({
                 if (state.list?.[index]?.messages) {
                     state.list[index].messages = [action.payload.message, ...(state.list?.[index]?.messages || [])];
                 }
+
+                state.list.unshift(state.list.splice(index, 1)[0]);
             }
         },
         setReplyMessage(state, action: PayloadAction<{ chatId?: string, message: IMessage | null}>) {
