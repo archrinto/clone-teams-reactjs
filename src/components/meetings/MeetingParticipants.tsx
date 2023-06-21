@@ -12,7 +12,7 @@ interface IMeetingParticipantsProps {
     children?: any
 }
 
-export const PeerVideo = ({ userPeer, className, src, objectFit }: any) => {
+export const PeerVideo = ({ userPeer, className, src, objectFit, muted }: any) => {
     let peerTimeout: any = null;
     const refVideo = useRef<HTMLVideoElement>(null);
     const refStream = useRef<MediaStream>();
@@ -28,6 +28,7 @@ export const PeerVideo = ({ userPeer, className, src, objectFit }: any) => {
                 ref={refVideo}
                 src={src}
                 autoPlay
+                muted={muted}
             />
             <div className="absolute bottom-0 left-0 max-w-full text-sm overflow-hidden">
                 <div className="bg-gray-800 bg-opacity-50 text-white px-3 py-0.5 rounded-md flex items-center gap-2 m-2">
@@ -57,6 +58,7 @@ const MeetingParticipants = ({ participantPeers, shareScreenPeer, myPeer }: IMee
                         <PeerVideo 
                             className="w-full aspect-4/3 bg-zinc-500 relative rounded overflow-hidden"
                             userPeer={myPeer}
+                            muted={true}
                         />
                         { participantPeers?.map((item, i) =>
                             <PeerVideo 
@@ -86,6 +88,7 @@ const MeetingParticipants = ({ participantPeers, shareScreenPeer, myPeer }: IMee
                 <div className="w-64 aspect-4/3 bg-zinc-500 relative">
                     <PeerVideo
                         userPeer={myPeer}
+                        muted={true}
                     />
                 </div>
             </div>
