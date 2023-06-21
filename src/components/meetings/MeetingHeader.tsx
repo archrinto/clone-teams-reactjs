@@ -1,18 +1,22 @@
 
-import { VideoCameraIcon, MicrophoneIcon, PhoneIcon, VideoCameraSlashIcon } from "@heroicons/react/24/solid";
+import { VideoCameraIcon, MicrophoneIcon, PhoneIcon, VideoCameraSlashIcon, ComputerDesktopIcon } from "@heroicons/react/24/solid";
 import MicrophoneSlashIcon from "./MicrophoneSlashIcon";
+import SquareEnterIcon from "./SquareEnterIcon";
+import SquareQuitIcon from "./SquareQuitIcon";
 
 interface IMeetingHeaderProps {
     onLeave?: () => void
     onToggleMic?: () => void
     onToggleCamera?: () => void
+    onToggleShareScreen?: () => void
     micStatus: boolean
     cameraStatus: boolean,
+    shareScreenStatus?: boolean
     meetingName?: string
 }
 
 const MeetingHeader = ({ 
-    onLeave, onToggleCamera, onToggleMic, micStatus, cameraStatus, meetingName
+    onLeave, onToggleCamera, onToggleMic, micStatus, cameraStatus, meetingName, onToggleShareScreen, shareScreenStatus
 }: IMeetingHeaderProps) => {
     return (
         <div className="flex flex-col">
@@ -43,6 +47,15 @@ const MeetingHeader = ({
                         { micStatus ? 
                             <MicrophoneIcon className="h-5 w-5" /> :
                             <MicrophoneSlashIcon className="h-5 w-5" />
+                        }
+                    </button>
+                    <button 
+                        onClick={() => onToggleShareScreen ? onToggleShareScreen() : null}
+                        className="p-1"
+                    >
+                        { shareScreenStatus ? 
+                            <SquareQuitIcon className="h-5 w-5" /> :
+                            <SquareEnterIcon className="h-5 w-5" /> 
                         }
                     </button>
                     <button
