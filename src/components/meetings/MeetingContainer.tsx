@@ -186,7 +186,7 @@ const MeetingContainer = () => {
         console.log('--- create new main peer', userId);
 
         const participantPeer = createParticipantPeer(userId);
-        const shareScreenPeer = shareScreenState ? createShareScreenPeer(userId) : null;
+        const shareScreenPeer = shareScreenStreamRef.current ? createShareScreenPeer(userId) : null;
 
         addParticipantPeer({ peerId: userId, peer: participantPeer, user });
 
@@ -442,6 +442,7 @@ const MeetingContainer = () => {
 
         if (index === -1) return;
         if (!peersRef.current[index].stream) {
+            console.log('--- add stream to undefined stream')
             peersRef.current[index].stream = stream;
         };
 
@@ -492,6 +493,7 @@ const MeetingContainer = () => {
         });
         shareScreenPeersRef.current = [];
         shareScreenStreamRef.current?.getTracks().forEach(track => track.stop());
+        shareScreenStreamRef.current = null;
         setShareScreenState(false);
     }
 
