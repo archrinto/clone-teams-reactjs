@@ -184,6 +184,7 @@ const MeetingContainer = () => {
     const handleUserJoinMeet = ({ userId, user }: any) => {
         console.log('--- joined:', userId);
         console.log('--- create new main peer', userId);
+        console.log('--- user should make share screen peer', Boolean(shareScreenStreamRef.current), shareScreenStreamRef.current)
 
         const participantPeer = createParticipantPeer(userId);
         const shareScreenPeer = shareScreenStreamRef.current ? createShareScreenPeer(userId) : null;
