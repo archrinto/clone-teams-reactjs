@@ -6,7 +6,7 @@ import { setActiveChatByUser } from '../slices/chatSlice';
 import { selectCurrentUser, setCredentials } from '../slices/authSlice';
 import { setUserMap } from '../slices/userSlice';
 import { Menu, Transition } from '@headlessui/react';
-import { ChevronDownIcon } from '@heroicons/react/24/solid';
+import { ChevronDownIcon, Bars3Icon } from '@heroicons/react/24/solid';
 import { useNavigate } from 'react-router-dom';
 import Avatar from './Avatar';
 
@@ -78,10 +78,15 @@ const Header = () => {
 
     return(
         <div className="bg-indigo-800 flex items-center">
+            <div className="p-3 hidden sm:hidden">
+                <button className='text-white p-1'>
+                    <Bars3Icon className="w-4 h-4" />
+                </button>
+            </div>
             <div className="w-80 mr-12 text-white px-4 py-3">
                 Clone Teams
             </div>
-            <div className="flex-grow max-w-3xl relative py-3">
+            <div className="flex-grow max-w-3xl relative py-3 sm:hidden">
                 <div className="w-full" ref={refSearchBox}>
                     <input 
                         type="text" 

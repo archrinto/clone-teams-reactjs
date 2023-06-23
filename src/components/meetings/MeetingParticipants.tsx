@@ -45,16 +45,16 @@ export const PeerVideo = ({ userPeer, className, src, objectFit, muted }: any) =
 const MeetingParticipants = ({ participantPeers, shareScreenPeer, myPeer }: IMeetingParticipantsProps) => {
     if (shareScreenPeer) {
         return (
-            <div className="flex-grow w-full flex flex-row">
+            <div className="flex-grow w-full flex flex-row sm:flex-col">
                 <div className="flex-grow relative">
                     <PeerVideo 
-                        className="bg-zinc-900 top-0 bottom-0 left-0 right-0 h-full w-full absolute object-contain pt-1"
+                        className="bg-zinc-900 top-0 bottom-0 left-0 right-0 h-full w-full object-contain pt-1"
                         userPeer={shareScreenPeer}
                         objectFit={'object-contain'}
                     />
                 </div>
-                <div className="w-96 border-zinc-800 flex-none flex flex-col p-1">
-                    <div className="flex-grow grid grid-cols-2 gap-1 content-start justify-center">
+                <div className="w-96 sm:w-full border-zinc-800 flex-none flex flex-col p-1">
+                    <div className="flex-grow grid grid-cols-2 sm:grid-cols-4 gap-1 content-start justify-center">
                         <PeerVideo 
                             className="w-full aspect-4/3 bg-zinc-500 relative rounded overflow-hidden"
                             userPeer={myPeer}
@@ -80,12 +80,12 @@ const MeetingParticipants = ({ participantPeers, shareScreenPeer, myPeer }: IMee
                     <PeerVideo
                         key={i}
                         userPeer={item}
-                        className="w-80 aspect-4/3 bg-zinc-500 relative"
+                        className="w-80 sm:w-56 aspect-4/3 bg-zinc-500 relative"
                     />
                 )}
             </div>
             <div className="absolute bottom-0 right-0">
-                <div className="w-64 aspect-4/3 bg-zinc-500 relative">
+                <div className="w-64 sm:w-40 aspect-4/3 bg-zinc-500 relative">
                     <PeerVideo
                         userPeer={myPeer}
                         muted={true}

@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
 import { ChatBubbleOvalLeftEllipsisIcon, InboxIcon, UserIcon, UserGroupIcon, CalendarDaysIcon } from '@heroicons/react/24/solid';
+import { useAppDispatch } from '../hooks/hooks';
+import { toggleSidebar } from '../slices/uiSlice';
 
 const Sidebar: React.FC = () => {
     const [activeMenu, setActiveMenu] = useState<String>('home');
+    const dispatch = useAppDispatch();
 
     const handleMenuClick = (menu: String) => {
         setActiveMenu(menu);
+        if (menu === activeMenu) {
+            dispatch(toggleSidebar());
+        }
     };
 
     return (
-        <div className="sidebar py-3 w-full ml-1 text-gray-400">
+        <div className="sidebar py-3 w-full ml-0.5 text-gray-400">
             <button
                 className={`w-full flex flex-col items-center justify-center mb-4 ${
                 activeMenu === 'home' ? 'text-indigo-700 border-l-2 border-indigo-700' : 'border-l-2 border-transparent'

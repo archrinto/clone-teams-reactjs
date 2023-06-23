@@ -6,6 +6,7 @@ import { setActiveChat, setChatList, setChatMessages } from '../slices/chatSlice
 import ChatListItem from './ChatListItem';
 import { selectUserMap, setUserMap } from '../slices/userSlice';
 import { selectCurrentUser } from '../slices/authSlice';
+import { toggleSidebar } from '../slices/uiSlice';
 
 interface ChatListProps {
 }
@@ -22,7 +23,8 @@ const ChatList: React.FC<ChatListProps> = ({ }) => {
     const users: IUser[] = [];
 
     const handleClick = async (chat: Chat) => {
-        dispatch(setActiveChat(chat))
+        dispatch(setActiveChat(chat));
+        dispatch(toggleSidebar());
     };
 
     useEffect(() => {

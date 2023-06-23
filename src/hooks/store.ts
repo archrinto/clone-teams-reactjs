@@ -3,12 +3,15 @@ import authReducer from '../slices/authSlice';
 import chatReducer from '../slices/chatSlice';
 import { apiSlice } from '../slices/apiSlice';
 import userReducer from '../slices/userSlice';
+import uiReducer from '../slices/uiSlice';
+import uiSlice from '../slices/uiSlice';
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
         chat: chatReducer,
         users: userReducer,
+        ui: uiSlice,
         [apiSlice.reducerPath]: apiSlice.reducer
     },
     middleware: (getDefaultMiddleware) => {

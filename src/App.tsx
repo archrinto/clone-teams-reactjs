@@ -140,18 +140,18 @@ function App() {
           <Route path="/register" element={<RegisterContainer />} />
           <Route path="/*" element={<PrivateOutlet />}>
             <Route index element={
-              <div className="h-screen flex flex-col">
-                <Header />
-                <div className="flex flex-grow">
-                  <div className="w-20 flex flex-col items-center bg-gray-200 border-right bg-opacity-80 relative">
-                    <div className="right-0 absolute top-0 bottom-0 bg-gradient-to-l from-gray-300 to-transparent w-3 z-40 opacity-60"></div>
-                    <Sidebar />
-                  </div>
-                  <div className="flex flex-col flex-grow relative">
-                    <ChatContainer />
-                  </div>
+                <div className="h-screen flex flex-col">
+                    <Header />
+                    <div className="flex flex-grow">
+                        <div className="w-16 flex flex-col items-center bg-gray-200 border-right bg-opacity-80 relative pr-1">
+                            <div className="right-0 absolute top-0 bottom-0 bg-gradient-to-l from-gray-300 to-transparent w-3 z-40 opacity-60"></div>
+                            <Sidebar />
+                        </div>
+                        <div className="flex flex-col flex-grow relative">
+                            <ChatContainer />
+                        </div>
+                    </div>
                 </div>
-            </div>
             } />
             <Route path="meeting/:roomId" element={<MeetingContainer />} />
           </Route>

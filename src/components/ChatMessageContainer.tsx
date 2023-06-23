@@ -14,6 +14,7 @@ import ChatMessageParticipantMenu from "./ChatMessageParticipantMenu";
 import GroupChatHeader from "./GroupChatHeader";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 
 export interface Message {
     type?: string,
@@ -241,30 +242,39 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
     return (
         <div className="flex flex-col h-full absolute left-0 right-0 top-0 bottom-0">
             <div className="flex justify-between items-center mb-auto top-0 w-full px-4 py-3 border-b shrink-0 text-gray-600">
-                { activeChat?.chatType === 'single' ?
-                    <UserChatHeader 
-                        user={userMap[activeChat?.participants?.[0]._id]}
-                    /> :
-                    <GroupChatHeader 
-                        chat={activeChat}
-                    />
-                }
-                <div className="flex gap-4 items-center">
-                    <div>
-                        <button className="border p-1 rounded-md block shadow-sm border-gray-300" onClick={handleCall}>
-                            <PhoneIcon className="h-4 w-4" />
+                <div className="flex items-center gap-3">
+                    <div className="items-center hidden sm:hidden">
+                        <button className="text-gray-500">
+                            <ArrowLeftIcon className="h-5 w-5" />
                         </button>
                     </div>
-                    <div>
-                        <ChatMessageParticipantMenu
+                    { activeChat?.chatType === 'single' ?
+                        <UserChatHeader 
+                            user={userMap[activeChat?.participants?.[0]._id]}
+                        /> :
+                        <GroupChatHeader 
                             chat={activeChat}
-                            currentUser={currentUser}
                         />
-                    </div>
-                    <div>
-                        <button className="flex items-center gap-1 hover:text-indigo-700 text-sm">
-                            <ArrowUpOnSquareStackIcon className="h-5 w-5" />
-                        </button>
+                    }
+                </div>
+                <div>
+                    <div className="flex gap-4 items-center">
+                        <div>
+                            <button className="border p-1 rounded-md block shadow-sm border-gray-300" onClick={handleCall}>
+                                <PhoneIcon className="h-4 w-4" />
+                            </button>
+                        </div>
+                        <div>
+                            <ChatMessageParticipantMenu
+                                chat={activeChat}
+                                currentUser={currentUser}
+                            />
+                        </div>
+                        <div className="sm:hidden">
+                            <button className="flex items-center gap-1 hover:text-indigo-700 text-sm">
+                                <ArrowUpOnSquareStackIcon className="h-5 w-5" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
