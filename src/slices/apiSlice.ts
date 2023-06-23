@@ -83,7 +83,7 @@ export interface IMessageRequest {
 
 export interface IUserRequestParams {
     search: string,
-    limit: number,
+    limit?: number,
 }
 
 export interface IChangeStatusRequest {

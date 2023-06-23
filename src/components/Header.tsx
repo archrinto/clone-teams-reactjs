@@ -22,7 +22,7 @@ const Header = () => {
     const navigate = useNavigate();
 
     const doSearch = async (search: string) => {
-        getUsers({ search, limit: 0});
+        getUsers({ search });
     }
 
     const handleInputKeywordBlur = (event: any) => {
@@ -83,20 +83,21 @@ const Header = () => {
                     <Bars3Icon className="w-4 h-4" />
                 </button>
             </div>
-            <div className="w-80 mr-12 text-white px-4 py-3">
-                Clone Teams
+            <div className="w-80 sm:w-16 mr-8 sm:mr-0 text-white px-4 py-3">
+                <span className="sm:hidden">Clone Teams</span>
+                <span className="hidden sm:block">CT</span>
             </div>
-            <div className="flex-grow max-w-3xl relative py-3 sm:hidden">
+            <div className="flex-grow max-w-3xl relative py-3">
                 <div className="w-full" ref={refSearchBox}>
                     <input 
                         type="text" 
                         onFocus={(e) => setShowResult(true)}
                         placeholder="Search"
                         onChange={ (event) => setKeyword(event.target.value) }
-                        className="bg-gray-50 border border-gray-300 text-gray-900 rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full px-2 py-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        className="bg-white bg-opacity-90 rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full px-2 py-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     />
                     { isShowResult ? (
-                        <div className="z-30 absolute left-0 right-0 top-13">
+                        <div className="z-30 absolute left-0 right-0 top-14">
                             <div className="w-full bg-white border p-4 rounded-md drop-shadow-md flex flex-col gap-2">
                                 { users?.map((item) => 
                                     <button 
@@ -123,7 +124,7 @@ const Header = () => {
                     ) : null }
                 </div>
             </div>
-            <div className="w-72 ml-auto flex justify-end h-full">
+            <div className="w-72 sm:w-32 ml-auto flex justify-end h-full">
                 <Menu as="div" className="relative h-full">
                     <Menu.Button  
                         className="flex items-center gap-2 text-white hover:bg-indigo-700 h-full px-4"
