@@ -29,6 +29,7 @@ export const PeerVideo = ({ userPeer, className, src, objectFit, muted }: any) =
                 src={src}
                 autoPlay
                 muted={muted}
+                playsInline={true}
             />
             <div className="absolute bottom-0 left-0 max-w-full text-sm overflow-hidden">
                 <div className="bg-gray-800 bg-opacity-50 text-white px-3 py-0.5 rounded-md flex items-center gap-2 m-2">
