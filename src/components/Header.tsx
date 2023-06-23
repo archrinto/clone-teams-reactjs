@@ -83,7 +83,7 @@ const Header = () => {
                     <Bars3Icon className="w-4 h-4" />
                 </button>
             </div>
-            <div className="w-80 sm:w-16 mr-8 sm:mr-0 text-white px-4 py-3">
+            <div className="w-80 sm:w-16 mr-8 sm:mr-0 text-white px-4 py-3 flex-none">
                 <span className="sm:hidden">Clone Teams</span>
                 <span className="hidden sm:block">CT</span>
             </div>
@@ -113,7 +113,7 @@ const Header = () => {
                                                 currentTarget.src = emptyUserAvatar;
                                             }}
                                         />
-                                        <div>
+                                        <div className="text-left">
                                             { item.name }
                                             { currentUser?._id == item._id ? ' (You)' : '' }
                                         </div>
@@ -124,17 +124,17 @@ const Header = () => {
                     ) : null }
                 </div>
             </div>
-            <div className="w-72 sm:w-32 ml-auto flex justify-end h-full">
-                <Menu as="div" className="relative h-full">
+            <div className="w-40 sm:w-32 ml-auto flex justify-end h-full">
+                <Menu as="div" className="relative h-full w-full md:w-auto">
                     <Menu.Button  
-                        className="flex items-center gap-2 text-white hover:bg-indigo-700 h-full px-4"
+                        className="flex items-center gap-2 text-white hover:bg-indigo-700 h-full px-4 w-full overflow-hidden"
                     >
                         <Avatar
                             status={currentUser?.profileStatus}
                             src={currentUser?.avatar}
                             alt={currentUser?.name}
                         />
-                        <div>
+                        <div className="md:hidden truncate">
                             { currentUser?.name }
                         </div>
                     </Menu.Button>
