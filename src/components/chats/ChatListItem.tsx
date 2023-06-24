@@ -13,7 +13,6 @@ export interface IChatListItemProps {
 }
 
 const ChatListItem = ({chat, isActive, onClick, currentUserId}: IChatListItemProps) => {
-    console.log('render chat item');
     const handleClick = (chat: IChat) => {
         onClick(chat);
     };
