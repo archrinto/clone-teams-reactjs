@@ -14,9 +14,8 @@ const Header = () => {
     const [getUsers, { isLoading, data: users }] = useLazyFetchUsersQuery();
     const [isShowResult, setShowResult] = useState(false);
     const [keyword, setKeyword] = useState('');
-    const [userUpdateStatus, result] = useChangeUserStatusMutation();
     const refSearchBox = useRef<HTMLInputElement>(null);
-    const currentUser = useAppSelector(selectCurrentUser);
+    const currentUserId = useAppSelector(state => state.auth.user?._id);
     const dispatch = useAppDispatch();
 
     const doSearch = async (search: string) => {
@@ -35,31 +34,11 @@ const Header = () => {
         setShowResult(false);
     }
 
-    const handleLogout = () => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-
-        // dispatch(setCredentials({ user: null, token: ''}));
-        window.location.href = '/login'
-    }
-
-    const handleChangeStatus = (status: string) => {
-        userUpdateStatus({
-            profileStatus: status
-        });
-    }
-
-    const statusOptions: any = {
-        available: 'Available',
-        busy: 'Busy',
-        dnd: 'Do not distrub',
-        away: 'Away',
-        offline: 'Appear offline',
-    }
-
     useEffect(() => {
         const searchTimeout = setTimeout(() => {
-            doSearch(keyword.trim())
+            if (keyword.trim()) {
+                doSearch(keyword.trim());
+            }
         }, debounce);
 
         return () => {
@@ -108,7 +87,7 @@ const Header = () => {
                                         />
                                         <div className="text-left">
                                             { item.name }
-                                            { currentUser?._id == item._id ? ' (You)' : '' }
+                                            { currentUserId === item._id ? ' (You)' : '' }
                                         </div>
                                     </button>
                                 )}
@@ -118,107 +97,140 @@ const Header = () => {
                 </div>
             </div>
             <div className="w-40 sm:w-32 ml-auto flex justify-end h-full">
-                <Menu as="div" className="relative h-full w-full md:w-auto">
-                    <Menu.Button  
-                        className="flex items-center gap-2 text-white hover:bg-indigo-700 h-full px-4 w-full overflow-hidden justify-end"
-                    >
-                        <Avatar
-                            status={currentUser?.profileStatus}
-                            src={currentUser?.avatar}
-                            alt={currentUser?.name}
-                        />
-                        <div className="md:hidden truncate">
-                            { currentUser?.name }
-                        </div>
-                    </Menu.Button>
-                    <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                    >
-                        <Menu.Items 
-                            className="absolute z-50 right-2 top-16 shadow-lg bg-white border w-72 rounded-md"
-                        >
-                            <Menu.Item
-                                as="div"
-                                className="flex w-full p-4"
-                            >
-                                <Avatar 
-                                    src={currentUser?.avatar || ''}
-                                    hideStatus={true}
-                                />
-                                <div className="ml-3 leading-none">
-                                    <div>{ currentUser?.name }</div>
-                                    <div className="text-sm text-gray-600">
-                                        { currentUser?.email }
-                                    </div>
-                                    <div className="mt-1">
-                                        <Menu as="div" className="relative inline-block text-left text-gray-600 text-sm">
-                                            <div>
-                                                <Menu.Button className="inline-flex w-full items-center justify-center gap-x-1.5 rounded-md text-sm hover:bg-gray-50">
-                                                    { statusOptions?.[currentUser?.profileStatus || ''] || 'Change status'}
-                                                    <ChevronDownIcon className="-mr-1 h-3 w-3 text-gray-400" aria-hidden="true" />
-                                                </Menu.Button>
-                                            </div>
-
-                                            <Transition
-                                                as={Fragment}
-                                                enter="transition ease-out duration-100"
-                                                enterFrom="transform opacity-0 scale-95"
-                                                enterTo="transform opacity-100 scale-100"
-                                                leave="transition ease-in duration-75"
-                                                leaveFrom="transform opacity-100 scale-100"
-                                                leaveTo="transform opacity-0 scale-95"
-                                            >
-                                                <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                                <div className="py-1">
-                                                    { Object.keys(statusOptions).map((item) => 
-                                                        <Menu.Item key={item}>
-                                                            {({ active }) => (
-                                                                <button
-                                                                    onClick={ () => handleChangeStatus(item) }
-                                                                    className={
-                                                                            'block w-full px-4 py-2 text-left text-sm ' +
-                                                                            (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700')
-                                                                        }
-                                                                    >
-                                                                    { statusOptions[item] }
-                                                                </button>
-                                                            )}
-                                                        </Menu.Item>
-                                                    )}                                                    
-                                                </div>
-                                                </Menu.Items>
-                                            </Transition>
-                                        </Menu>
-                                    </div>
-                                </div>
-                            </Menu.Item>
-                            <Menu.Item
-                                as="div"
-                                className="flex w-full py-2 border-t"
-                            >
-                                {({ active }) => (
-                                <button
-                                    onClick={handleLogout}
-                                    className={
-                                        'block w-full px-4 py-2 text-left text-sm ' +
-                                        (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700')
-                                    }
-                                >
-                                    Sign out
-                                </button>
-                                )}
-                            </Menu.Item>
-                        </Menu.Items>
-                    </Transition>
-                </Menu>
+                <CurrentUserAvatarMenu />
             </div>
         </div>
     )
 }
+
+export const CurrentUserAvatarMenu = () => {
+    const currentUser = useAppSelector(selectCurrentUser);
+    const userStatus = useAppSelector(state => state.users.userMap[currentUser?._id || '']);
+    const [userUpdateStatus, result] = useChangeUserStatusMutation();
+
+    const statusOptions: any = {
+        available: 'Available',
+        busy: 'Busy',
+        dnd: 'Do not distrub',
+        away: 'Away',
+        offline: 'Appear offline',
+    }
+
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+
+        // dispatch(setCredentials({ user: null, token: ''}));
+        window.location.href = '/login'
+    }
+
+    const handleChangeStatus = (status: string) => {
+        userUpdateStatus({
+            profileStatus: status
+        });
+    }
+
+    return (
+        <Menu as="div" className="relative h-full w-full md:w-auto">
+            <Menu.Button  
+                className="flex items-center gap-2 text-white hover:bg-indigo-700 h-full px-4 w-full overflow-hidden justify-end"
+            >
+                <Avatar
+                    status={userStatus?.profileStatus}
+                    src={currentUser?.avatar}
+                    alt={currentUser?.name}
+                />
+                <div className="md:hidden truncate">
+                    { currentUser?.name }
+                </div>
+            </Menu.Button>
+            <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+            >
+                <Menu.Items 
+                    className="absolute z-50 right-2 top-16 shadow-lg bg-white border w-72 rounded-md"
+                >
+                    <Menu.Item
+                        as="div"
+                        className="flex w-full p-4"
+                    >
+                        <Avatar 
+                            src={currentUser?.avatar || ''}
+                            hideStatus={true}
+                        />
+                        <div className="ml-3 leading-none">
+                            <div>{ currentUser?.name }</div>
+                            <div className="text-sm text-gray-600">
+                                { currentUser?.email }
+                            </div>
+                            <div className="mt-1">
+                                <Menu as="div" className="relative inline-block text-left text-gray-600 text-sm">
+                                    <div>
+                                        <Menu.Button className="inline-flex w-full items-center justify-center gap-x-1.5 rounded-md text-sm hover:bg-gray-50">
+                                            { statusOptions?.[userStatus?.profileStatus || ''] || 'Change status'}
+                                            <ChevronDownIcon className="-mr-1 h-3 w-3 text-gray-400" aria-hidden="true" />
+                                        </Menu.Button>
+                                    </div>
+
+                                    <Transition
+                                        as={Fragment}
+                                        enter="transition ease-out duration-100"
+                                        enterFrom="transform opacity-0 scale-95"
+                                        enterTo="transform opacity-100 scale-100"
+                                        leave="transition ease-in duration-75"
+                                        leaveFrom="transform opacity-100 scale-100"
+                                        leaveTo="transform opacity-0 scale-95"
+                                    >
+                                        <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                        <div className="py-1">
+                                            { Object.keys(statusOptions).map((item) => 
+                                                <Menu.Item key={item}>
+                                                    {({ active }) => (
+                                                        <button
+                                                            onClick={ () => handleChangeStatus(item) }
+                                                            className={
+                                                                    'block w-full px-4 py-2 text-left text-sm ' +
+                                                                    (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700')
+                                                                }
+                                                            >
+                                                            { statusOptions[item] }
+                                                        </button>
+                                                    )}
+                                                </Menu.Item>
+                                            )}                                                    
+                                        </div>
+                                        </Menu.Items>
+                                    </Transition>
+                                </Menu>
+                            </div>
+                        </div>
+                    </Menu.Item>
+                    <Menu.Item
+                        as="div"
+                        className="flex w-full py-2 border-t"
+                    >
+                        {({ active }) => (
+                        <button
+                            onClick={handleLogout}
+                            className={
+                                'block w-full px-4 py-2 text-left text-sm ' +
+                                (active ? 'bg-gray-100 text-gray-900' : 'text-gray-700')
+                            }
+                        >
+                            Sign out
+                        </button>
+                        )}
+                    </Menu.Item>
+                </Menu.Items>
+            </Transition>
+        </Menu>
+    )
+}
+
 export default Header;

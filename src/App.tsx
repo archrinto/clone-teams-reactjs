@@ -77,9 +77,9 @@ function App() {
                 profileStatus: user.profileStatus 
             }));
 
-            if (getCurrentUserId() === user._id) {
-                dispatch(updateCurrentUserStatus(user.profileStatus));
-            }
+            // if (getCurrentUserId() === user._id) {
+            //     dispatch(updateCurrentUserStatus(user.profileStatus));
+            // }
         })
 
         socket.on('meeting-start', (chat) => {

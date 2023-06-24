@@ -7,6 +7,8 @@ export const getDaysDifference = (a: Date, b: Date = new Date()) => {
 }
 
 export const formatDateTimeShort = (isoDateString: string, locale: string = 'en-US') => {
+    if (!isoDateString) return 'n/a';
+
     const a = new Date(isoDateString);
     const c = new Date();
     const diff = getDaysDifference(a, c);
@@ -23,6 +25,8 @@ export const formatDateTimeShort = (isoDateString: string, locale: string = 'en-
 }
 
 export const formatDateTime = (isoDateString: string, locale: string = 'en-US') => {
+    if (!isoDateString) return 'n/a';
+
     const a = new Date(isoDateString);
     const c = new Date();
     const diff = getDaysDifference(a, c)
