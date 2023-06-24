@@ -1,12 +1,14 @@
-import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/solid';
-import React, { useEffect, useState } from 'react';
-import { Chat, IUser, useFetchChatsQuery, useLazyFetchChatMessagesQuery, useLazyFetchChatsQuery } from '../slices/apiSlice';
-import { useAppDispatch, useAppSelector } from '../hooks/hooks';
-import { setActiveChat, setChatList, setChatMessages } from '../slices/chatSlice';
+import React, { useEffect } from 'react';
+import { useLazyFetchChatMessagesQuery, useLazyFetchChatsQuery } from '../../slices/apiSlice';
+import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
+import { setActiveChat, setChatList } from '../../slices/chatSlice';
+import { selectUserMap, setUserMap } from '../../slices/userSlice';
+import { selectCurrentUser } from '../../slices/authSlice';
+import { toggleSidebar } from '../../slices/uiSlice';
+import { IUser } from '../../models/user';
+import { IChat } from '../../models/chat';
 import ChatListItem from './ChatListItem';
-import { selectUserMap, setUserMap } from '../slices/userSlice';
-import { selectCurrentUser } from '../slices/authSlice';
-import { toggleSidebar } from '../slices/uiSlice';
+import { useNavigate } from 'react-router-dom';
 
 interface ChatListProps {
 }
@@ -16,15 +18,15 @@ const ChatList: React.FC<ChatListProps> = ({ }) => {
     const chatList = useAppSelector((state) => state.chat.list);
     const draftChat = useAppSelector((state) => state.chat.draftChat);
     const activeChat = useAppSelector((state) => state.chat.activeChat);
-    const [getChatMessages, chatMessagesResult] = useLazyFetchChatMessagesQuery();
-    const userMap = useAppSelector(selectUserMap);
     const currentUser = useAppSelector(selectCurrentUser);
     const dispatch = useAppDispatch();
     const users: IUser[] = [];
+    const navigate = useNavigate();
 
-    const handleClick = async (chat: Chat) => {
+    const handleClick = async (chat: IChat) => {
         dispatch(setActiveChat(chat));
         dispatch(toggleSidebar());
+        navigate(`/chats/${chat._id || 'draft'}`);
     };
 
     useEffect(() => {
@@ -51,7 +53,7 @@ const ChatList: React.FC<ChatListProps> = ({ }) => {
             </div>
             <ul className="p-1.5">
                 { draftChat ?
-                    <ChatListItem 
+                    <ChatListItem
                         key="draft"
                         chat={draftChat} 
                         isActive={activeChat?._id == draftChat._id} 
@@ -62,7 +64,7 @@ const ChatList: React.FC<ChatListProps> = ({ }) => {
                     <ChatListItem 
                         key={chat._id}
                         chat={chat} 
-                        user={chat.chatType == 'single' ? userMap[chat?.participants?.[0]?._id] : null}
+                        user={chat.chatType == 'single' ? chat?.participants?.[0] : undefined}
                         isActive={activeChat?._id == chat._id} 
                         currentUserId={currentUser?._id}
                         onClick={handleClick}

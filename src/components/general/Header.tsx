@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState, Fragment } from 'react';
-import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
-import { IUser, useLazyFetchUsersQuery, useChangeUserStatusMutation } from '../slices/apiSlice';
-import { useAppDispatch, useAppSelector } from '../hooks/hooks';
-import { setActiveChatByUser } from '../slices/chatSlice';
-import { selectCurrentUser, setCredentials } from '../slices/authSlice';
-import { setUserMap } from '../slices/userSlice';
+import { useLazyFetchUsersQuery, useChangeUserStatusMutation } from '../../slices/apiSlice';
+import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
+import { setActiveChatByUser } from '../../slices/chatSlice';
+import { selectCurrentUser, setCredentials } from '../../slices/authSlice';
+import { setUserMap } from '../../slices/userSlice';
 import { Menu, Transition } from '@headlessui/react';
 import { ChevronDownIcon, Bars3Icon } from '@heroicons/react/24/solid';
-import { useNavigate } from 'react-router-dom';
 import Avatar from './Avatar';
+import { IUser } from '../../models/user';
 
 const Header = () => {
     const debounce = 500;
@@ -19,7 +18,6 @@ const Header = () => {
     const refSearchBox = useRef<HTMLInputElement>(null);
     const currentUser = useAppSelector(selectCurrentUser);
     const dispatch = useAppDispatch();
-    const navigate = useNavigate();
 
     const doSearch = async (search: string) => {
         getUsers({ search });
@@ -105,13 +103,8 @@ const Header = () => {
                                         className="flex items-center gap-2 hover:bg-indigo-200 w-full p-1.5 rounded-md"
                                         onClick={() => handleUserClick(item)}
                                     >
-                                        <img
-                                            src={item.avatar || emptyUserAvatar}
-                                            className="w-8 h-8 rounded-full mr-2"
-                                            onError={({ currentTarget }) => {
-                                                currentTarget.onerror = null; // prevents looping
-                                                currentTarget.src = emptyUserAvatar;
-                                            }}
+                                        <Avatar 
+                                            src={item.avatar || ''}
                                         />
                                         <div className="text-left">
                                             { item.name }
@@ -127,7 +120,7 @@ const Header = () => {
             <div className="w-40 sm:w-32 ml-auto flex justify-end h-full">
                 <Menu as="div" className="relative h-full w-full md:w-auto">
                     <Menu.Button  
-                        className="flex items-center gap-2 text-white hover:bg-indigo-700 h-full px-4 w-full overflow-hidden"
+                        className="flex items-center gap-2 text-white hover:bg-indigo-700 h-full px-4 w-full overflow-hidden justify-end"
                     >
                         <Avatar
                             status={currentUser?.profileStatus}
@@ -154,13 +147,9 @@ const Header = () => {
                                 as="div"
                                 className="flex w-full p-4"
                             >
-                                <img
-                                    src={currentUser?.avatar || emptyUserAvatar}
-                                    className="w-12 h-12 rounded-full mr-2"
-                                    onError={({ currentTarget }) => {
-                                        currentTarget.onerror = null; // prevents looping
-                                        currentTarget.src = emptyUserAvatar;
-                                    }}
+                                <Avatar 
+                                    src={currentUser?.avatar || ''}
+                                    hideStatus={true}
                                 />
                                 <div className="ml-3 leading-none">
                                     <div>{ currentUser?.name }</div>

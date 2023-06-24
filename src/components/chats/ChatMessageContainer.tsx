@@ -1,32 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { IMessage, IMessageRequestParams, useLazyFetchChatMessagesQuery } from "../slices/apiSlice";
-import { selectCurrentUser } from "../slices/authSlice";
-import { selectActiveChat, setChatMarkAsRead, setChatMessages } from "../slices/chatSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { useLazyFetchChatMessagesQuery } from "../../slices/apiSlice";
+import { selectCurrentUser } from "../../slices/authSlice";
+import { selectActiveChat, setChatMarkAsRead, setChatMessages } from "../../slices/chatSlice";
 import ChatMessagePrompt from "./ChatMessagePrompt";
-import { selectUserMap } from "../slices/userSlice";
+import { selectUserMap } from "../../slices/userSlice";
 import ChatMessageItem from "./ChatMessageItem";
 import { ArrowUpOnSquareStackIcon, PhoneIcon } from "@heroicons/react/24/outline";
-import Avatar from "./Avatar";
-import useOnOutsideClick from "../hooks/useOnOutsideClick";
+import useOnOutsideClick from "../../hooks/useOnOutsideClick";
 import ChatMessageContextMenu from "./ChatMessageContextMenu";
 import ChatMessageParticipantMenu from "./ChatMessageParticipantMenu";
-import GroupChatHeader from "./GroupChatHeader";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-
-export interface Message {
-    type?: string,
-    content?: string,
-    sender?: any
-}
-
-interface Chat {
-    _id?: string,
-    avatar?: string,
-    name?: string,
-}
+import { IMessage } from "../../models/chat";
+import ChatMessageHeader from "./ChatMessageHeader";
+import ChatMessageGroupHeader from "./ChatMessageGroupHeader";
 
 interface ChatMessageContainerProps {
 }
@@ -43,22 +32,8 @@ const initialContextMenuState = {
     pageY: 0 
 }
 
-const UserChatHeader = ({ user }: any) => {
-    return (
-        <div className="flex gap-2 items-center">
-            <Avatar 
-                status={user?.profileStatus}
-                src={user?.avatar} 
-                alt={user?.name}
-            />
-            <div>
-                <span className="font-bold">{ user?.name || 'User' }</span>
-            </div>
-        </div>
-    )
-}
-
 const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
+    const { chatId } = useParams()
     const refLoadMore = useRef({
         chatId: '',
         lastMessageDate: new Date().toISOString(),
@@ -71,8 +46,6 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
     const activeChat = useAppSelector(selectActiveChat);
     const [getChatMessages, chatMessagesResult] = useLazyFetchChatMessagesQuery();
     const dispatch = useAppDispatch();
-    const userMap = useAppSelector(selectUserMap);
-    const chatId = activeChat?._id || null;
     const messagesAreaRef = useRef<HTMLDivElement>(null);
     const messageListRef = useRef<HTMLDivElement>(null);
     const [selectedMessage, setSelectedMessage] = useState<IMessage | null>(null)
@@ -85,6 +58,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
         try {
             refLoadMore.current.isFetching = true;
             refLoadMore.current.lastScrollHeight = messagesAreaRef?.current?.scrollHeight || 0;
+
             getChatMessages({
                 chatId: activeChat._id,
                 limit: 5,
@@ -98,11 +72,13 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
                         ...(result.data || [])
                     ]
                 }));
+
                 const lastMessage = result?.data?.[result.data?.length - 1] || null;
                 
                 if (lastMessage && lastMessage.createdAt) {
                     refLoadMore.current.lastMessageDate = lastMessage.createdAt;
                 }
+
                 refLoadMore.current.isFetching = false;
                 refLoadMore.current.hasMore = Boolean(lastMessage);
 
@@ -199,7 +175,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
                     key={message._id}
                     isMine={message.sender?._id === currentUser?._id}
                     message={message}
-                    sender={message.sender ? userMap[message.sender._id] : null}
+                    sender={message.sender ? message.sender : null}
                     onContextMenu={handleMessageContextMenu}
                 />
             )
@@ -239,44 +215,15 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
         )
     }
 
+    if (!currentUser) return null;
+
     return (
         <div className="flex flex-col h-full absolute left-0 right-0 top-0 bottom-0">
-            <div className="flex justify-between items-center mb-auto top-0 w-full px-4 py-3 border-b shrink-0 text-gray-600">
-                <div className="flex items-center gap-3">
-                    <div className="items-center hidden sm:hidden">
-                        <button className="text-gray-500">
-                            <ArrowLeftIcon className="h-5 w-5" />
-                        </button>
-                    </div>
-                    { activeChat?.chatType === 'single' ?
-                        <UserChatHeader 
-                            user={userMap[activeChat?.participants?.[0]._id]}
-                        /> :
-                        <GroupChatHeader 
-                            chat={activeChat}
-                        />
-                    }
-                </div>
-                <div>
-                    <div className="flex gap-4 items-center">
-                        <div>
-                            <button className="border p-1 rounded-md block shadow-sm border-gray-300" onClick={handleCall}>
-                                <PhoneIcon className="h-4 w-4" />
-                            </button>
-                        </div>
-                        <div>
-                            <ChatMessageParticipantMenu
-                                chat={activeChat}
-                                currentUser={currentUser}
-                            />
-                        </div>
-                        <div className="sm:hidden">
-                            <button className="flex items-center gap-1 hover:text-indigo-700 text-sm">
-                                <ArrowUpOnSquareStackIcon className="h-5 w-5" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <div className="mb-auto top-0 w-full px-4 py-2.5 border-b shrink-0 relative">
+                <ChatMessageHeader
+                    chat={activeChat}
+                    currentUser={currentUser}
+                />
             </div>
             <div 
                 ref={messagesAreaRef}

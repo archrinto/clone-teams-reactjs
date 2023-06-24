@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'
-import { ILoginResponse, useLoginMutation } from '../slices/apiSlice';
+import { useLoginMutation } from '../slices/apiSlice';
 import { useAppDispatch } from '../hooks/hooks';
 import { setCredentials } from '../slices/authSlice';
 import { socket } from '../socket';
 import { toast } from 'react-toastify';
 import Spinner from './general/Spinner';
+import { ILoginResponse } from '../models/user';
 
 const LoginContainer: React.FC = () => {
     const [username, setUsername] = useState('');

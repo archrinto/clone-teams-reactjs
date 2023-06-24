@@ -1,6 +1,6 @@
-import { Chat } from "../slices/apiSlice";
+import { IChat } from "../models/chat";
 
-export const getChatName = (chat: Chat): string => {
+export const getChatName = (chat: IChat): string => {
     if (chat.chatType === 'single') {
         return chat?.participants?.[0]?.name || '';
     }

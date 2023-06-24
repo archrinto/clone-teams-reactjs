@@ -1,7 +1,6 @@
-import { useState } from "react";
 import ChatList from "./ChatList";
-import ChatMessageContainer, { Message } from "./ChatMessageContainer";
-import { useAppSelector } from "../hooks/hooks";
+import { useAppSelector } from "../../hooks/hooks";
+import { Outlet } from "react-router-dom";
 
 const ChatContainer = () => {
     const sidebarActive = useAppSelector((state) => state.ui.sidebarActive);
@@ -13,7 +12,7 @@ const ChatContainer = () => {
                 <ChatList />
             </div>
             <div className="flex-grow bg-gray-100 relative">
-                <ChatMessageContainer />
+                <Outlet />
             </div>
         </div>
     )

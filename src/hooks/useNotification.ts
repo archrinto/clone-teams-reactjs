@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react"
-import { Chat, IMessage } from "../slices/apiSlice";
 import messageNotificationSound from '../assets/sounds/teams-notification.mp3';
 import meetingNotificationSound from '../assets/sounds/teams-default.mp3';
 import logoIcon from '../assets/images/icons/logo.png';
 import callIcon from '../assets/images/call-icon-1.jpg';
 import emptyAvatarUser from '../assets/images/empty-avatar-1.png';
 import { getChatName } from "../utils/ChatHelper";
+import { IChat, IMessage } from "../models/chat";
 
 const useNotification = () => {
     const notificationRef = useRef<Notification[]>([]);
@@ -66,7 +66,7 @@ const useNotification = () => {
         })
     }
 
-    const createMeetingStartNotification = (chat: Chat) => {
+    const createMeetingStartNotification = (chat: IChat) => {
         if (!('Notification' in window)) return;
         
         const chatName = getChatName(chat);

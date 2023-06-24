@@ -1,8 +1,8 @@
 import { forwardRef } from "react";
-import { IMessage } from "../slices/apiSlice"
 import { ArrowUturnLeftIcon,  EyeSlashIcon,  TagIcon,  TrashIcon } from "@heroicons/react/24/outline";
-import { useAppDispatch } from "../hooks/hooks";
-import { setReplyMessage } from "../slices/chatSlice";
+import { useAppDispatch } from "../../hooks/hooks";
+import { setReplyMessage } from "../../slices/chatSlice";
+import { IMessage } from "../../models/chat";
 
 interface ChatMessageContextMenuProps {
     pageX: Number,

@@ -1,6 +1,4 @@
 import './App.css';
-import Sidebar from './components/Sidebar';
-import ChatContainer from './components/ChatContainer';
 import { useAppDispatch, useAppSelector } from './hooks/hooks';
 import LoginContainer from './components/LoginContainer';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
@@ -9,13 +7,18 @@ import { useEffect } from 'react';
 import { socket } from './socket';
 import { addChatMessage, addNewChat, updateChat } from './slices/chatSlice';
 import { selectCurrentUser, setCredentials, updateCurrentUserStatus } from './slices/authSlice';
-import Header from './components/Header';
 import { addUserMap, changeUserStatus, setUserMap } from './slices/userSlice';
 import RegisterContainer from './components/RegisterContainer';
-import MeetingContainer from './components/meetings/MeetingContainer';
 import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import useNotification from './hooks/useNotification';
+import MainContainer from './components/MainContainer';
+import MeetingContainer from "./components/meetings/MeetingContainer";
+import CalendarContainer from "./components/CalendarContainer";
+import TeamsContainer from "./components/TeamsContainer";
+import ChatContainer from "./components/chats/ChatContainer";
+import ChatMessageContainer from './components/chats/ChatMessageContainer';
+import ChatActiveEmpty from './components/chats/ChatActiveEmpty';
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
@@ -138,22 +141,17 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginContainer />} />
           <Route path="/register" element={<RegisterContainer />} />
-          <Route path="/*" element={<PrivateOutlet />}>
-            <Route index element={
-                <div className="h-screen flex flex-col">
-                    <Header />
-                    <div className="flex flex-grow">
-                        <div className="w-16 flex flex-col items-center bg-gray-200 border-right bg-opacity-80 relative pr-1">
-                            <div className="right-0 absolute top-0 bottom-0 bg-gradient-to-l from-gray-300 to-transparent w-3 z-40 opacity-60"></div>
-                            <Sidebar />
-                        </div>
-                        <div className="flex flex-col flex-grow relative">
-                            <ChatContainer />
-                        </div>
-                    </div>
-                </div>
-            } />
-            <Route path="meeting/:roomId" element={<MeetingContainer />} />
+          <Route path="/" element={<PrivateOutlet />}>
+            <Route path="/" element={<MainContainer />}>
+                <Route path="chats" element={<ChatContainer />}>
+                    <Route index element={<ChatActiveEmpty />} />
+                    <Route path=":chatId" element={<ChatMessageContainer />}>
+                    </Route>
+                </Route>
+                <Route path="teams" element={<TeamsContainer />} />
+                <Route path="calendar" element={<CalendarContainer />} />
+                <Route path="meeting/:roomId" element={<MeetingContainer />} />
+            </Route>
           </Route>
         </Routes>   
         <ToastContainer 

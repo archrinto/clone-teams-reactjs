@@ -1,17 +1,18 @@
-import { Chat, useUpdateChatMutation } from "../slices/apiSlice";
-import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
-import { PencilIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { useUpdateChatMutation } from "../../slices/apiSlice";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { useAppDispatch } from "../hooks/hooks";
-import { updateChat } from "../slices/chatSlice";
-import { getChatName } from "../utils/ChatHelper";
+import { useAppDispatch } from "../../hooks/hooks";
+import { updateChat } from "../../slices/chatSlice";
+import { getChatName } from "../../utils/ChatHelper";
 import { toast } from "react-toastify";
+import { IChat } from "../../models/chat";
+import Avatar from "../general/Avatar";
 
 interface IGroupChatHeaderProps {
-    chat: Chat | null,
+    chat: IChat | null,
 }
 
-const GroupChatHeader = ({ chat }: IGroupChatHeaderProps) => {
+const ChatMessageGroupHeader = ({ chat }: IGroupChatHeaderProps) => {
     const defaultChatName = chat ? getChatName(chat) : '';
     const [groupName, setGroupName] = useState(defaultChatName);
     const [isChangeName, setIsChangeName] = useState(false);
@@ -51,14 +52,10 @@ const GroupChatHeader = ({ chat }: IGroupChatHeaderProps) => {
     }
 
     return (
-        <div className="flex gap-4 items-center relative">
-            <img
-                src={chat?.avatar || emptyUserAvatar}
-                className="w-6 h-6 rounded-full bg-gray-200"
-                onError={({ currentTarget }) => {
-                    currentTarget.onerror = null; // prevents looping
-                    currentTarget.src = emptyUserAvatar;
-                }}
+        <div className="flex gap-4 items-center h-full">
+            <Avatar 
+                src={chat?.avatar || ''}
+                hideStatus={true}
             />
             <div>
                 <span className="font-bold text-gray-800">{defaultChatName}</span>
@@ -71,7 +68,7 @@ const GroupChatHeader = ({ chat }: IGroupChatHeaderProps) => {
                     <PencilSquareIcon className="h-5 w-6" />
                 </button>
                 { isChangeName ? 
-                    <div className="absolute z-40 right-0 left-0 top-10 shadow-lg bg-white border w-80 rounded-md text-sm py-3 px-4">
+                    <div className="absolute z-40 left-4 top-14 shadow-lg bg-white border w-80 rounded-md text-sm py-3 px-4">
                         <div className="mb-3">
                             <label className="mb-1 block">Group Name</label>
                             <div className="relative">
@@ -103,4 +100,4 @@ const GroupChatHeader = ({ chat }: IGroupChatHeaderProps) => {
     )
 }
 
-export default GroupChatHeader;
+export default ChatMessageGroupHeader;

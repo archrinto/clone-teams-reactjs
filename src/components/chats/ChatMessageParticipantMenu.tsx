@@ -1,15 +1,17 @@
-import { ArrowLeftOnRectangleIcon, UserMinusIcon, UserPlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Chat, IUser, useAddChatParticipantMutation, useLazyFetchUsersQuery } from "../slices/apiSlice";
+import { ArrowLeftOnRectangleIcon, UserPlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useAddChatParticipantMutation } from "../../slices/apiSlice";
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment, useState } from "react";
-import Avatar from "./Avatar";
+import Avatar from "../general/Avatar";
 import ChatMessageAddParticipant from "./ChatMessageAddParticipant";
-import { useAppDispatch } from "../hooks/hooks";
-import { updateChat } from "../slices/chatSlice";
+import { useAppDispatch } from "../../hooks/hooks";
+import { updateChat } from "../../slices/chatSlice";
 import { toast } from "react-toastify";
+import { IChat } from "../../models/chat";
+import { IUser } from "../../models/user";
 
 interface IChatMessageParticipantMenuProps {
-    chat: Chat | null,
+    chat: IChat | null,
     currentUser: IUser | null
 }
 
@@ -24,7 +26,7 @@ const ChatParticipantItem = ({ user, isCurrentUser }: IChatParticipantItem) => {
 
     return (
         <div key={user._id} className="w-full flex items-center justify-between gap-2 px-3 py-1 hover:bg-gray-100 group">
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
                 <Avatar
                     src={''}
                 />
@@ -76,8 +78,8 @@ const ChatMessageParticipantMenu = ({ chat, currentUser }: IChatMessageParticipa
     }
 
     return (
-        <div className="h-full relative">
-            <Menu as="div" className="relative h-full">
+        <div className="h-full">
+            <Menu as="div" className="h-full">
                 <Menu.Button className="flex items-center gap-1 hover:text-indigo-700 text-sm hover:font-bold">
                     <UserPlusIcon className="h-5 w-5" />
                     <span>{chat?.participantCount}</span>
@@ -92,7 +94,7 @@ const ChatMessageParticipantMenu = ({ chat, currentUser }: IChatMessageParticipa
                     leaveTo="transform opacity-0 scale-95"
                 >
                     <Menu.Items
-                        className="absolute z-50 right-0 top-10 shadow-lg bg-white border w-64 rounded-md text-sm py-2"
+                        className="absolute z-50 right-4 top-14 shadow-lg bg-white border w-64 rounded-md text-sm py-2"
                     >
                         <Menu.Item>
                             <div className="mb-2 border-b pb-2">

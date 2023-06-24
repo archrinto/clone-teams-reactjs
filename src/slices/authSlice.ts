@@ -1,16 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { IUser } from './apiSlice'
 import { RootState } from '../hooks/store';
-
-export type AuthState = {
-    user: IUser | null
-    token: string | null
-}
+import { IAuthState, IUser } from '../models/user';
 
 const slice = createSlice({
     name: 'auth',
-    initialState: { user: null, token: null } as AuthState,
+    initialState: { user: null, token: null } as IAuthState,
     reducers: {
         setCredentials: (
             state,

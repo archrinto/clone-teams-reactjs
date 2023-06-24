@@ -1,15 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Chat, IMessage, IUser } from './apiSlice'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../hooks/store';
+import { IChat, IChatState, IMessage } from '../models/chat';
+import { IUser } from '../models/user';
 
-interface ChatState {
-    list: Chat[],
-    activeChat: Chat | null
-    draftChat: Chat | null,
-    replyMessage: IMessage | null,
-}
-
-const initialState: ChatState = {
+const initialState: IChatState = {
     list: [],
     activeChat: null,
     draftChat: null,
@@ -20,13 +14,13 @@ const chatSlice = createSlice({
     name: 'chat',
     initialState,
     reducers: {
-        setActiveChat(state, action: PayloadAction<Chat | null>) {
+        setActiveChat(state, action: PayloadAction<IChat | null>) {
             state.activeChat = action.payload ? {...action.payload} : action.payload;
         },
-        setDraftChat(state, action: PayloadAction<Chat | null>) {
+        setDraftChat(state, action: PayloadAction<IChat | null>) {
             state.draftChat = action.payload ? {...action.payload} : action.payload;
         },
-        setChatMarkAsRead(state, action: PayloadAction<Chat | null | undefined >) {
+        setChatMarkAsRead(state, action: PayloadAction<IChat | null | undefined >) {
             const chatId = action.payload ? action.payload._id : state.activeChat?._id;
             if (chatId) {
                 const index = state.list.findIndex(item => item._id === chatId);
@@ -58,16 +52,16 @@ const chatSlice = createSlice({
                 state.activeChat = {...state.draftChat}
             }
         },
-        setChatList(state, action: PayloadAction<Chat[]>) {
+        setChatList(state, action: PayloadAction<IChat[]>) {
             state.list = [...action.payload];
         },
-        addNewChat(state, action: PayloadAction<Chat>) {
+        addNewChat(state, action: PayloadAction<IChat>) {
             const index = state.list.findIndex(item => item._id === action.payload._id);
             if (index === -1) {
                 state.list = [action.payload, ...state.list];
             }
         },
-        updateChat(state, action: PayloadAction<{chatId: string, chat:Chat}>) {
+        updateChat(state, action: PayloadAction<{chatId: string, chat:IChat}>) {
             const index = state.list.findIndex(item => item._id === action.payload.chatId);
             if (index !== -1) {
                 // prevent message override

@@ -1,10 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
-import { IUser } from "./apiSlice"
 import { RootState } from "../hooks/store";
-
-interface IUserState {
-    userMap: any // indexed users
-}
+import { IUser, IUserState } from "../models/user";
 
 const initialState: IUserState = {
     userMap: {}

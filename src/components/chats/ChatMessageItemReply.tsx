@@ -1,5 +1,5 @@
 import { XMarkIcon } from "@heroicons/react/24/solid"
-import { IMessage } from "../slices/apiSlice"
+import { IMessage } from "../../models/chat";
 
 interface ChatMessageItemReplyProps {
     canCancel: boolean,

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import Avatar from "./Avatar"
-import { Chat, IUser, useAddChatParticipantMutation, useLazyFetchUsersQuery } from "../slices/apiSlice";
+import Avatar from "../general/Avatar"
+import { useLazyFetchUsersQuery } from "../../slices/apiSlice";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { IUser } from "../../models/user";
+
 interface ChatMessageAddParticipantProps {
     onCancel: () => void
     onSubmit: (participants: IUser[]) => void
@@ -60,7 +62,7 @@ const ChatMessageAddParticipant = ({ onCancel, onSubmit }: ChatMessageAddPartici
     }, [keyword])
 
     return (
-        <div className="absolute z-40 right-0 top-10 shadow-lg bg-white border w-80 rounded-md text-sm py-3 px-4">
+        <div className="absolute z-40 right-4 top-14 shadow-lg bg-white border w-80 rounded-md text-sm py-3 px-4">
             <div className="mb-3">
                 <label className="mb-1 block">Add</label>
                 <div className="mb-1 space-y-1">

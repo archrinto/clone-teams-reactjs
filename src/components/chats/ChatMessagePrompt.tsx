@@ -1,18 +1,17 @@
 import { PaperAirplaneIcon, PaperClipIcon } from "@heroicons/react/24/solid";
 import { useState, useRef, useEffect } from "react";
-import { Message } from "./ChatMessageContainer";
-import { useAppDispatch, useAppSelector } from "../hooks/hooks";
-import { addChatMessage, addNewChat, selectActiveChat, setActiveChat, setChatList, setChatMarkAsRead, setDraftChat, setReplyMessage } from "../slices/chatSlice";
-import { Chat, IMessage, useCreateChatMutation, useSendChatMessageMutation } from "../slices/apiSlice";
-import { selectCurrentUser } from "../slices/authSlice";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useAppDispatch, useAppSelector } from "../../hooks/hooks";
+import { setChatMarkAsRead, setReplyMessage } from "../../slices/chatSlice";
+import { useSendChatMessageMutation } from "../../slices/apiSlice";
+import { selectCurrentUser } from "../../slices/authSlice";
 import ChatMessageItemReply from "./ChatMessageItemReply";
-import { useCreateChatFromDraft } from "../hooks/useCreateChatFromDraft";
+import { useCreateChatFromDraft } from "../../hooks/useCreateChatFromDraft";
 import { toast } from "react-toastify";
+import { IChat, IMessage } from "../../models/chat";
 
 interface IMessagePromptProps {
     onMessageSent?: (message: IMessage) => void,
-    activeChat: Chat | null;
+    activeChat: IChat | null;
 }
 
 const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent, activeChat }) => {

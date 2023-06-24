@@ -1,8 +1,8 @@
-import { IMessage, IUser } from "../slices/apiSlice";
-import emptyUserAvatar from '../assets/images/empty-user-avatar.jpeg';
-import Avatar from "./Avatar";
+import Avatar from "../general/Avatar";
 import ChatMessageItemReply from "./ChatMessageItemReply";
-import { formatDateTime } from "../utils/DateHelper";
+import { formatDateTime } from "../../utils/DateHelper";
+import { IMessage } from '../../models/chat';
+import { IUser } from '../../models/user';
 
 interface IChatMessageItemProps {
     message: IMessage,

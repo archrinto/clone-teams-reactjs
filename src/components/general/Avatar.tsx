@@ -1,11 +1,11 @@
-import emptyUserAvatar from '../assets/images/empty-user-avatar.png';
-import statusAvailable from '../assets/images/icons/presence_available.png';
-import statusUnknown from '../assets/images/icons/presence_unknown.png';
-import statusOof from '../assets/images/icons/presence_oof.png';
-import statusOffline from '../assets/images/icons/presence_offline.png';
-import statusAway from '../assets/images/icons/presence_away.png';
-import statusBusy from '../assets/images/icons/presence_busy.png';
-import statusDnd from '../assets/images/icons/presence_dnd.png';
+import emptyUserAvatar from '../../assets/images/empty-user-avatar.png';
+import statusAvailable from '../../assets/images/icons/presence_available.png';
+import statusUnknown from '../../assets/images/icons/presence_unknown.png';
+import statusOof from '../../assets/images/icons/presence_oof.png';
+import statusOffline from '../../assets/images/icons/presence_offline.png';
+import statusAway from '../../assets/images/icons/presence_away.png';
+import statusBusy from '../../assets/images/icons/presence_busy.png';
+import statusDnd from '../../assets/images/icons/presence_dnd.png';
 
 interface IAvatarProps {
     status?: string
@@ -45,14 +45,14 @@ const Avatar = ({ status, src, alt, hideStatus=false }: IAvatarProps) => {
             <img
                 src={src || emptyUserAvatar}
                 alt={alt || 'Avatar'}
-                className="w-8 h-8 rounded-full mr-2 bg-gray-300"
+                className="w-8 h-8 rounded-full bg-gray-300"
                 onError={({ currentTarget }) => {
                     currentTarget.onerror = null; // prevents looping
                     currentTarget.src = emptyUserAvatar;
                 }}
             />
             { !hideStatus ? 
-                <span className="absolute right-2 bottom-0 border-2 border-white rounded-full bg-white">
+                <span className="absolute right-0 bottom-0 border-2 border-white rounded-full bg-white">
                     <img 
                         src={statusBadge}
                         className="w-2.5 h-2.5 rounded-full"

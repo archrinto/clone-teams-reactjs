@@ -1,9 +1,10 @@
-import { Chat, IUser } from '../slices/apiSlice';
-import { formatDateTimeShort } from '../utils/DateHelper';
-import Avatar from './Avatar';
+import { IChat } from '../../models/chat';
+import { IUser } from '../../models/user';
+import { formatDateTimeShort } from '../../utils/DateHelper';
+import Avatar from '../general/Avatar';
 
 export interface IChatListItemProps {
-    chat: Chat,
+    chat: IChat,
     user?: IUser,
     isActive: boolean,
     onClick: any | void,
@@ -11,13 +12,13 @@ export interface IChatListItemProps {
 }
 
 const ChatListItem = ({chat, user, isActive, onClick, currentUserId}: IChatListItemProps) => {
-    const handleClick = (chat: Chat) => {
+    const handleClick = (chat: IChat) => {
         onClick(chat);
     };
 
     const lastMessage = chat?.messages?.[0] || null;
 
-    const getChatDatetime = (chat: Chat) => {
+    const getChatDatetime = (chat: IChat) => {
         let strDate = chat?.createdAt || '';
         if (chat?.messages && chat.messages.length > 0) {
             strDate = chat.messages?.[0].createdAt || '';
@@ -34,7 +35,7 @@ const ChatListItem = ({chat, user, isActive, onClick, currentUserId}: IChatListI
     return (
         <li
             key={chat._id}
-            className={`flex items-center p-2 cursor-pointer rounded-md ${
+            className={`flex items-center p-2 cursor-pointer rounded-md gap-2 ${
                 isActive ? 'bg-white' : ''
             }`}
             onClick={() => handleClick(chat)}

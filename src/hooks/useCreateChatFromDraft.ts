@@ -1,13 +1,14 @@
 import { toast } from "react-toastify";
-import { Chat, useCreateChatMutation } from "../slices/apiSlice"
+import { useCreateChatMutation } from "../slices/apiSlice"
 import { addNewChat, setActiveChat, setDraftChat } from "../slices/chatSlice";
 import { useAppDispatch } from "./hooks";
+import { IChat } from "../models/chat";
 
 export const useCreateChatFromDraft = () => {
     const dispatch = useAppDispatch();
     const [createChat, data] = useCreateChatMutation();
 
-    return async (chat: Chat) => {
+    return async (chat: IChat) => {
         if (!chat._id) {
             const newChatData = {
                 name: null,

@@ -1,9 +1,6 @@
-import { createRef, useEffect, useRef, useState } from "react"
-import { IUser } from "../../slices/apiSlice"
-import SimplePeer from "simple-peer"
+import { useRef } from "react"
 import { MicrophoneIcon } from "@heroicons/react/24/solid"
 import MicrophoneSlashIcon from "./MicrophoneSlashIcon"
-import { IMediaState } from "./MeetingContainer"
 
 interface IMeetingParticipantsProps {
     participantPeers?: any[],
@@ -13,9 +10,7 @@ interface IMeetingParticipantsProps {
 }
 
 export const PeerVideo = ({ userPeer, className, src, objectFit, muted }: any) => {
-    let peerTimeout: any = null;
     const refVideo = useRef<HTMLVideoElement>(null);
-    const refStream = useRef<MediaStream>();
     
     if (refVideo.current &&  userPeer?.stream) {
         refVideo.current.srcObject = userPeer.stream;
