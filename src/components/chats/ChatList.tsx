@@ -24,6 +24,7 @@ const ChatList: React.FC<ChatListProps> = ({ }) => {
     const navigate = useNavigate();
 
     const handleClick = async (chat: IChat) => {
+        if (!chat?._id) return;
         dispatch(setActiveChat(chat));
         dispatch(toggleSidebar());
         navigate(`/chats/${chat._id || 'draft'}`);
@@ -47,16 +48,14 @@ const ChatList: React.FC<ChatListProps> = ({ }) => {
     }, []);
 
     return (
-        <div className="w-72">
-            <div className="p-4">
-                <h2 className="text-xl font-bold">Chat</h2>
-            </div>
+        <div className="w-full h-full overflow-y-auto">
             <ul className="p-1.5">
                 { draftChat ?
                     <ChatListItem
                         key="draft"
                         chat={draftChat} 
-                        isActive={activeChat?._id == draftChat._id} 
+                        isActive={activeChat?._id === draftChat._id} 
+                        currentUserId={currentUser?._id}
                         onClick={handleClick}
                     /> : null
                 }
@@ -65,7 +64,7 @@ const ChatList: React.FC<ChatListProps> = ({ }) => {
                         key={chat._id}
                         chat={chat} 
                         user={chat.chatType == 'single' ? chat?.participants?.[0] : undefined}
-                        isActive={activeChat?._id == chat._id} 
+                        isActive={activeChat?._id === chat._id} 
                         currentUserId={currentUser?._id}
                         onClick={handleClick}
                     />

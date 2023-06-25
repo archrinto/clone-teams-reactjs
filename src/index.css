@@ -1,3 +1,36 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Track */
+::-webkit-scrollbar {
+    width: 6px;  /* Width of the scrollbar track */
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+::-webkit-scrollbar:hover {
+    opacity: 1;
+}
+
+/* Track background */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 5px 5px;
+    transition: background-color 0.4;
+}
+
+/* Handle */
+*:hover::-webkit-scrollbar-thumb {
+    background: #ddd;
+    opacity: 0.8;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #ccc;  /* Color of the scrollbar handle on hover */
+}

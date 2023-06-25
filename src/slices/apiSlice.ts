@@ -165,6 +165,13 @@ export const apiSlice = createApi({
                     return `/chats/${chatId}`
                 },
                 transformResponse: (response: { data: IChat }, meta, arg) => response.data
+            }),
+
+            getRelatedUser: builder.query<IUser[], number|void>({
+                query() {
+                    return '/users/related';
+                },
+                transformResponse: (response: { data: IUser[] }, meta, arg) => response.data
             })
         }
     }
@@ -185,5 +192,6 @@ export const {
     useAddChatParticipantMutation,
     useUpdateChatMutation,
     useGetChatQuery,
-    useLazyGetChatQuery
+    useLazyGetChatQuery,
+    useLazyGetRelatedUserQuery,
 } = apiSlice;

@@ -20,6 +20,9 @@ module.exports = {
         sm: { max: "639px" },
         // => @media (max-width: 639px) { ... }
       },
+      gradientColorStopPositions: {
+        97: '97%',
+      }
     },
   },
   plugins: [

@@ -28,7 +28,7 @@ const ChatMessageHeader = ({ chat, currentUser }: { chat: IChat, currentUser: IU
             <div className="flex items-center gap-3">
                 { chat?.chatType === 'single' ?
                     <ChatMessageUserHeader 
-                        userId={chat?.participants?.[0]._id}
+                        userId={chat?.participants?.[0]?._id}
                     /> :
                     <ChatMessageGroupHeader 
                         chat={chat}

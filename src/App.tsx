@@ -2,7 +2,7 @@ import './App.css';
 import { useAppDispatch, useAppSelector } from './hooks/hooks';
 import LoginContainer from './components/LoginContainer';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { PrivateOutlet } from './utils/PrivateOutlet';
+import { PrivateOutlet } from './components/PrivateOutlet';
 import { useEffect } from 'react';
 import { socket } from './socket';
 import { addChatMessage, addNewChat, updateChat } from './slices/chatSlice';
@@ -19,6 +19,7 @@ import TeamsContainer from "./components/TeamsContainer";
 import ChatContainer from "./components/chats/ChatContainer";
 import ChatMessageContainer from './components/chats/ChatMessageContainer';
 import ChatActiveEmpty from './components/chats/ChatActiveEmpty';
+import { useLazyGetRelatedUserQuery } from './slices/apiSlice';
 
 function App() {
     const currentUser = useAppSelector(selectCurrentUser);
@@ -29,6 +30,7 @@ function App() {
         createMessageNotificaion,
         createMeetingStartNotification
     } = useNotification();
+    const [getRelatedUser] = useLazyGetRelatedUserQuery();
 
     const getCurrentUserId = () => {
         return currentUser?._id;
@@ -113,6 +115,15 @@ function App() {
         navigate(location.pathname);
     }
 
+    const initalizeData = () => {
+        getRelatedUser()
+        .then(({ data }) => {
+            dispatch(setUserMap(data ?? []))
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+
     useEffect(() => {    
         checkLoggedinUser();
 
@@ -124,6 +135,7 @@ function App() {
     useEffect(() => {
         if (currentUser) {
             initializeSocket();
+            initalizeData();
         }
 
         return () => {

@@ -99,7 +99,7 @@ export const ChatListItemGroup = ({
                 </div>
                 <p className="text-sm truncate">
                     { currentUserId && lastMessage?.sender?._id === currentUserId ? 
-                        'You: ' : lastMessage?.sender?.name?.split(' ')?.[0]
+                        'You: ' : lastMessage?.sender?.name?.split(' ')?.[0] + ': '
                     }
                     {lastMessage?.content || (!chat._id ? <i>Draft</i> : <i>No message</i>) }
                 </p>

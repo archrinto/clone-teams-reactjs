@@ -141,19 +141,6 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
         });
     }
 
-    const handleCall = () => {
-        if (popupMeetingWindow.current && !popupMeetingWindow.current.closed) {
-            popupMeetingWindow.current.close();
-        }
-
-        const width = Math.floor(window.innerWidth * 0.7);
-        const height = Math.floor(window.innerHeight * 0.8);
-        const left = Math.floor((window.innerWidth - width) / 2);
-        const top = Math.floor((window.innerHeight - height) / 2);
-
-        popupMeetingWindow.current = window.open(`/meeting/${activeChat?._id}`, '_blank', `width=${width}, height=${height}, left=${left}, top=${top}`);
-    }
-
     const handleScroll = async (event: any) => {
         if (!activeChat) return;
         if (event.target.scrollTop === 0 && refLoadMore.current.hasMore) {
@@ -173,9 +160,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
             return (
                 <ChatMessageItem 
                     key={message._id}
-                    isMine={message.sender?._id === currentUser?._id}
                     message={message}
-                    sender={message.sender ? message.sender : null}
                     onContextMenu={handleMessageContextMenu}
                 />
             )
@@ -219,7 +204,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
 
     return (
         <div className="flex flex-col h-full absolute left-0 right-0 top-0 bottom-0">
-            <div className="mb-auto top-0 w-full px-4 py-2.5 border-b shrink-0 relative">
+            <div className="mb-auto top-0 w-full px-4 py-2.5 border-b shrink-0 relative h-14">
                 <ChatMessageHeader
                     chat={activeChat}
                     currentUser={currentUser}
