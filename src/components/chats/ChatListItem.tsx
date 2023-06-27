@@ -27,18 +27,44 @@ const ChatListItem = ({chat, isActive, onClick, currentUserId}: IChatListItemPro
             }`}
             onClick={() => handleClick(chat)}
         >
-            { chat.chatType === 'single' ?
-                <ChatListItemUser 
+            { chat._id === 'new' ? 
+                <ChatListItemNew 
                     chat={chat}
                     currentUserId={currentUserId}
                 /> :
-                <ChatListItemGroup
-                    chat={chat}
-                    currentUserId={currentUserId}
-                />
+                ( chat.chatType === 'single' ?
+                    <ChatListItemUser 
+                        chat={chat}
+                        currentUserId={currentUserId}
+                    /> :
+                    <ChatListItemGroup
+                        chat={chat}
+                        currentUserId={currentUserId}
+                    />
+                )
             }
-
         </li>
+    )
+}
+
+export const ChatListItemNew = ({ 
+    chat,
+    currentUserId 
+}: { currentUserId: string, chat: IChat}) => {
+    return (
+        <div className="flex items-center gap-2">
+            <Avatar
+                hideStatus={true}
+                alt="New chat"
+            />
+            <div className="flex-grow overflow-hidden">
+                <div className="flex gap-1 items-center justify-between text-gray-600">
+                    <span className="truncate">New chat</span>
+                    <span className='text-sm whitespace-nowrap'>
+                    </span>
+                </div>
+            </div>
+        </div>
     )
 }
 

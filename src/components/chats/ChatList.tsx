@@ -52,7 +52,7 @@ const ChatList: React.FC<ChatListProps> = ({ }) => {
             <ul className="p-1.5">
                 { draftChat ?
                     <ChatListItem
-                        key="draft"
+                        key={draftChat._id}
                         chat={draftChat} 
                         isActive={activeChat?._id === draftChat._id} 
                         currentUserId={currentUser?._id}

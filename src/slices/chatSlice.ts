@@ -18,7 +18,19 @@ const chatSlice = createSlice({
             state.activeChat = action.payload ? {...action.payload} : action.payload;
         },
         setDraftChat(state, action: PayloadAction<IChat | null>) {
-            state.draftChat = action.payload ? {...action.payload} : action.payload;
+            const newData = action.payload ? {...action.payload} : action.payload;
+            state.draftChat = newData;
+        },
+        updateDraftChat(state, action: PayloadAction<IChat | null>) {
+            const newData = action.payload ? {
+                ...state.draftChat,
+                ...action.payload
+            } : null;
+
+            if (state.activeChat?._id === state.draftChat?._id) {
+                state.activeChat = newData;
+            }
+            state.draftChat = newData;
         },
         setChatMarkAsRead(state, action: PayloadAction<IChat | null | undefined >) {
             const chatId = action.payload ? action.payload._id : state.activeChat?._id;
@@ -133,6 +145,7 @@ const chatSlice = createSlice({
 export const { 
     setActiveChat, 
     setDraftChat,
+    updateDraftChat,
     setChatList,
     setChatMessages,
     addChatMessage,

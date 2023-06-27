@@ -65,7 +65,7 @@ const ChatMessageGroupHeader = ({ chat }: IGroupChatHeaderProps) => {
                     onClick={() => setIsChangeName(true) }
                     className="hover:text-indigo-700"
                 >
-                    <PencilSquareIcon className="h-5 w-6" />
+                    <PencilSquareIcon className="h-5 w-5" />
                 </button>
                 { isChangeName ? 
                     <div className="absolute z-40 left-4 top-14 shadow-lg bg-white border w-80 rounded-md text-sm py-3 px-4">

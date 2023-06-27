@@ -170,6 +170,10 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
     useOnOutsideClick(messageContextMenuRef, closeMessageContextMenu);
 
     useEffect(() => {
+        if (activeChat?._id === 'draft' || activeChat?._id === 'new') {
+            return;
+        }
+        
         if (messagesAreaRef.current && activeChat?._id) {
             const sameChat = refLoadMore.current.chatId == activeChat._id;
             if (!sameChat) {
@@ -204,7 +208,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
 
     return (
         <div className="flex flex-col h-full absolute left-0 right-0 top-0 bottom-0">
-            <div className="mb-auto top-0 w-full px-4 py-2.5 border-b shrink-0 relative h-14">
+            <div className="mb-auto top-0 w-full shrink-0 relative flex items-center">
                 <ChatMessageHeader
                     chat={activeChat}
                     currentUser={currentUser}

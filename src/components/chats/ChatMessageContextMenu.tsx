@@ -16,6 +16,7 @@ const ChatMessageContextMenu = forwardRef(({ pageX, pageY, message, isMine, onCl
     const dispatch = useAppDispatch();
 
     const handleReply = () => {
+        console.log(message);
         if (!message?.chat) return;
         dispatch(setReplyMessage({
             chatId: message.chat._id || undefined,

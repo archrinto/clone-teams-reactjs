@@ -15,6 +15,7 @@ interface IMessagePromptProps {
 }
 
 const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent, activeChat }) => {
+    const prevChatIdRef = useRef<string>('');
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
     const [value, setValue] = useState<string>('');
@@ -25,7 +26,10 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent, activeCha
     const createChatFromDraft = useCreateChatFromDraft();
 
     useEffect(() => {
-        textareaRef.current?.focus();
+        if (activeChat?._id !== prevChatIdRef.current) {
+            textareaRef.current?.focus();
+        }
+        prevChatIdRef.current = activeChat?._id || '';
     }, [activeChat])
 
     const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -40,7 +44,7 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent, activeCha
 
         // check if chat is exists or not
         let chatId = activeChat?._id || '';
-        if (!chatId) {
+        if (!activeChat._id || activeChat._id === 'new' || activeChat._id === 'draft') {
             const newChat = await createChatFromDraft(activeChat);
             if (!newChat) return;
 

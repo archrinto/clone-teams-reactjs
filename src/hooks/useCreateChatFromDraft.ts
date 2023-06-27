@@ -9,9 +9,9 @@ export const useCreateChatFromDraft = () => {
     const [createChat, data] = useCreateChatMutation();
 
     return async (chat: IChat) => {
-        if (!chat._id) {
+        if (!chat._id || chat._id === 'new' || chat._id === 'draft') {
             const newChatData = {
-                name: null,
+                name: chat?.name || null,
                 chatType: chat?.chatType || 'single',
                 participants: chat?.participants?.map(item => item._id) || [],
             }
