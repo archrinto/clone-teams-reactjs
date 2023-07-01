@@ -55,6 +55,10 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
 
     const loadChatMessage = async () => {
         if (!activeChat) return;
+        if (activeChat?._id === 'draft' || activeChat?._id === 'new') {
+            return;
+        }
+
         try {
             refLoadMore.current.isFetching = true;
             refLoadMore.current.lastScrollHeight = messagesAreaRef?.current?.scrollHeight || 0;
@@ -169,11 +173,7 @@ const ChatMessageContainer: React.FC<ChatMessageContainerProps> = ({ }) => {
 
     useOnOutsideClick(messageContextMenuRef, closeMessageContextMenu);
 
-    useEffect(() => {
-        if (activeChat?._id === 'draft' || activeChat?._id === 'new') {
-            return;
-        }
-        
+    useEffect(() => {        
         if (messagesAreaRef.current && activeChat?._id) {
             const sameChat = refLoadMore.current.chatId == activeChat._id;
             if (!sameChat) {

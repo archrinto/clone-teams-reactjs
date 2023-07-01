@@ -74,7 +74,7 @@ const MessagePrompt: React.FC<IMessagePromptProps> = ({ onMessageSent, activeCha
                 console.log(error);
                 toast.error('Send message failed');
             }
-        }, 100)
+        }, 200)
     }
 
     const handleCancelReply = () => {
