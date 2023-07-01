@@ -138,6 +138,17 @@ const chatSlice = createSlice({
             if (index !== -1) {
                 state.list[index].replyMessage = action.payload.message
             }
+        },
+        leaveChat(state, action: PayloadAction<string>) {
+            const chatId = action.payload;
+            const index = state.list.findIndex(item => item._id === chatId);
+            if (index !== -1) {
+                state.list.splice(index, 1);
+            }
+
+            if (state.activeChat?._id === chatId) {
+                state.activeChat = null;
+            }
         }
     }
 });
@@ -153,7 +164,8 @@ export const {
     updateChat,
     setActiveChatByUser,
     setChatMarkAsRead,
-    setReplyMessage
+    setReplyMessage,
+    leaveChat
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

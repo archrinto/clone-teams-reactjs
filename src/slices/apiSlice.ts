@@ -172,6 +172,14 @@ export const apiSlice = createApi({
                     return '/users/related';
                 },
                 transformResponse: (response: { data: IUser[] }, meta, arg) => response.data
+            }),
+
+            leaveChat: builder.mutation<null, string>({
+                query: (chatId) => ({
+                    url: `/chats/${chatId}/leave`,
+                    method: 'DELETE',
+                }),
+                transformResponse: (response: { data: null }, meta, arg) => null
             })
         }
     }
@@ -190,6 +198,7 @@ export const {
     useChangeUserStatusMutation,
     useUpdateUserProfileMutation,
     useAddChatParticipantMutation,
+    useLeaveChatMutation,
     useUpdateChatMutation,
     useGetChatQuery,
     useLazyGetChatQuery,
