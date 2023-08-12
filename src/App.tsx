@@ -162,8 +162,8 @@ function App() {
                 </Route>
                 <Route path="teams" element={<TeamsContainer />} />
                 <Route path="calendar" element={<CalendarContainer />} />
-                <Route path="meeting/:roomId" element={<MeetingContainer />} />
             </Route>
+            <Route path="meeting/:roomId" element={<MeetingContainer />} />
           </Route>
         </Routes>   
         <ToastContainer 

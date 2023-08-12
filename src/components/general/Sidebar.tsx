@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChatBubbleOvalLeftEllipsisIcon, InboxIcon, UserIcon, UserGroupIcon, CalendarDaysIcon } from '@heroicons/react/24/solid';
 import { useAppDispatch } from '../../hooks/hooks';
 import { toggleSidebar } from '../../slices/uiSlice';
@@ -19,6 +19,12 @@ const Sidebar: React.FC = () => {
         }
         activeMenu.current = menu
     };
+
+    useEffect(() => {
+        if (!activeMenu.current) {
+            handleMenuClick('chats');
+        }
+    }, [])
 
     const isMenuActive = (menuPath: string) => {
         return location.pathname.startsWith(menuPath);
